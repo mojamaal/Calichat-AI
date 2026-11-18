@@ -1,0 +1,337 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CaliChat Technical Audit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+.st{font-size:12px;font-weight:600;border-radius:99px;padding:1px 9px;border:1px solid color-mix(in srgb,var(--c) 40%,var(--line));color:var(--c);background:color-mix(in srgb,var(--c) 10%,var(--surface));white-space:nowrap}
+.st-fixed{--c:var(--good)}.st-partial{--c:var(--med)}.st-open{--c:var(--crit)}
+.now{background:color-mix(in srgb,var(--c) 7%,var(--surface));border-radius:8px;padding:8px 12px}
+.todo{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:8px;font-size:14.5px}
+/* Layout: one reading column. Verdict and scorecard first, then filterable findings, roadmap, target architecture. */
+:root{
+  --bg:#F5F5FA; --surface:#FFFFFF; --ink:#17172B; --ink2:#4A4A66; --line:#E2E2EE; --accent:#4F4FE0;
+  --crit:#C62F4A; --high:#CB5A14; --med:#9A6F00; --low:#55678A; --good:#0B8A63;
+  --font:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif; --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--font);padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:32px 72px}
+main{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{margin:0;letter-spacing:-.015em;text-wrap:balance}
+h1{font-size:clamp(28px,5vw,42px);line-height:1.1;font-weight:600}
+h2{font-size:22px;font-weight:600}
+code{font-family:var(--mono);font-size:.88em;background:color-mix(in srgb,var(--accent) 10%,transparent);padding:1px 6px;border-radius:5px}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink2);font-weight:500}
+.muted{color:var(--ink2)}
+section{display:flex;flex-direction:column;gap:18px;min-width:0}
+.lede{max-width:68ch;color:var(--ink2);font-size:16px;margin:10px 0 0}
+.verdict{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px}
+.big{font-size:64px;line-height:1;font-weight:600;font-variant-numeric:tabular-nums}
+.big small{font-size:24px;color:var(--ink2);font-weight:400}
+.verdict p{margin:6px 0 0;max-width:62ch}
+.counts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.pill{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;padding:3px 11px;border-radius:99px;border:1px solid color-mix(in srgb,var(--c) 40%,var(--line));color:var(--c);background:color-mix(in srgb,var(--c) 10%,var(--surface))}
+.s-crit{--c:var(--crit)}.s-high{--c:var(--high)}.s-med{--c:var(--med)}.s-low{--c:var(--low)}
+.scores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.score{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.score .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.score b{font-weight:600}
+.score .n{font-family:var(--mono);font-size:18px;font-weight:500;font-variant-numeric:tabular-nums;color:var(--c)}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--c);border-radius:99px}
+.b-bad{--c:var(--crit)}.b-mid{--c:var(--med)}.b-ok{--c:var(--good)}
+.score p{margin:0;font-size:13.5px;color:var(--ink2)}
+.score p em{font-style:normal;color:var(--ink);font-weight:500}
+.good{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 28px;padding:0;margin:0;list-style:none}
+.good li{position:relative;padding-left:22px;font-size:14.5px}
+.good li::before{content:"";position:absolute;left:2px;top:.62em;width:9px;height:5px;border-left:2px solid var(--good);border-bottom:2px solid var(--good);transform:rotate(-45deg)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip,select,.link{font:inherit;font-size:13.5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 13px;border-radius:99px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+select{padding-right:8px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.list{display:flex;flex-direction:column;gap:10px}
+details.f{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px}
+details.f summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto auto 1fr;gap:6px 12px;align-items:center;padding:13px 16px}
+details.f summary::-webkit-details-marker{display:none}
+.fid{font-family:var(--mono);font-size:12.5px;color:var(--ink2)}
+.sev{font-size:12px;font-weight:600;color:var(--c);text-transform:uppercase;letter-spacing:.06em}
+.ft{font-weight:500}
+.body{padding:2px 18px 18px 18px;display:grid;gap:12px;border-top:1px dashed var(--line);margin:0 0 0;padding-top:14px}
+.body div{display:grid;grid-template-columns:92px 1fr;gap:12px}
+.body dt{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);padding-top:2px}
+.body dd{margin:0;min-width:0}
+.cat{font-size:12px;color:var(--ink2);border:1px solid var(--line);border-radius:99px;padding:1px 9px;white-space:nowrap}
+.sum{grid-column:1/-1;font-size:13px;color:var(--ink2);margin:0 0 -2px}
+.phases{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.phase{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.phase h3{font-size:16px}
+.phase ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.phase .when{font-family:var(--mono);font-size:12px;color:var(--accent)}
+.diagram{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;overflow-x:auto}
+.notes{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;font-size:14px;color:var(--ink2)}
+.notes b{color:var(--ink)}
+.rowhead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+@media(max-width:820px){
+  .verdict{grid-template-columns:1fr;gap:12px}.scores,.good,.phases{grid-template-columns:1fr}
+  .body div{grid-template-columns:1fr;gap:2px}
+  details.f summary{grid-template-columns:auto 1fr}.ft{grid-column:1/-1}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<main>
+<header>
+  <div class="eyebrow">CaliChat · audit of 10 Nov 2026 · re-assessed after remediation</div>
+  <h1 style="margin-top:10px">Technical audit and remediation</h1>
+  <p class="lede">A review of security, scalability, concurrency, usability, database design, architecture, code quality and the AI layer. Each finding keeps its original problem and fix, and now shows what was done about it and what is still open.</p>
+</header>
+
+<section aria-labelledby="v">
+  <h2 id="v" class="eyebrow" style="font-weight:500">Verdict</h2>
+  <div class="verdict">
+    <div class="big">7.3<small> / 10</small></div>
+    <div>
+      <b>Ready for a supervised pilot; not yet for an open public launch.</b>
+      <p class="muted">Was 4.5 before the fixes. The webhook now only stores and answers, and a worker processes a durable queue. Tenant isolation, role limits, lockout and instant session revocation are covered by 33 passing automated tests. Tools, memory and prompts are hardened, and tenants and admins get usage and health monitoring. Still open: MFA (left out as requested), a load test, a live TencentDB check, the controller/service refactor and a few compliance documents. Scores are my estimates, not measurements.</p>
+      <div class="counts" id="counts"></div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="sc">
+  <div class="rowhead"><h2 id="sc">Scorecard</h2><span class="muted" style="font-size:13px">Production readiness after the fixes, 10 is best</span></div>
+  <div class="scores" id="scores"></div>
+</section>
+
+<section aria-labelledby="ok">
+  <h2 id="ok">What is already solid</h2>
+  <ul class="good">
+    <li>Every query uses prepared statements; the few dynamic parts are whitelisted or cast to integers.</li>
+    <li>Every tenant query carries <code>tenant_id</code> from the session, never from user input.</li>
+    <li>Webhooks verify Meta's HMAC with a constant-time compare and reject channels that have no app secret.</li>
+    <li>Customer-bound tool parameters work: a lookup with another customer's phone returned 404 in testing, even when the AI supplied that phone.</li>
+    <li>Tokens and API keys are encrypted with AES-256-GCM and never shown again.</li>
+    <li>Output is escaped on the server and written with <code>textContent</code> in the browser.</li>
+    <li>CSRF tokens on all forms and API calls, session id regenerated at login, passwords hashed with <code>password_hash</code>.</li>
+    <li>The agent loop has a step cap, a handoff tool, a fallback message and a graceful path when Gemini is down.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="fi">
+  <div class="rowhead"><h2 id="fi">Findings and fixes</h2><span class="muted" id="shown" style="font-size:13px"></span></div>
+  <div class="filters" role="group" aria-label="Filter findings">
+    <button class="chip" data-sev="all" aria-pressed="true">All</button>
+    <button class="chip" data-sev="crit" aria-pressed="false">Critical</button>
+    <button class="chip" data-sev="high" aria-pressed="false">High</button>
+    <button class="chip" data-sev="med" aria-pressed="false">Medium</button>
+    <button class="chip" data-sev="low" aria-pressed="false">Low</button>
+    <label class="muted" style="font-size:13px;display:flex;gap:6px;align-items:center;margin-left:auto">Area
+      <select id="cat" aria-label="Filter by area"><option value="all">All areas</option></select></label>
+    <label class="muted" style="font-size:13px;display:flex;gap:6px;align-items:center">Status
+      <select id="stat" aria-label="Filter by status"><option value="all">All</option><option value="fixed">Fixed</option><option value="partial">Partly done</option><option value="open">Not done</option></select></label>
+    <button class="link" id="toggle" type="button">Expand all</button>
+  </div>
+  <div class="list" id="list"></div>
+</section>
+
+<section aria-labelledby="left">
+  <h2 id="left">Still open</h2>
+  <div class="notes"><ol class="todo">
+    <li><b>MFA</b> for super admins and owners. Excluded at your request.</li>
+    <li><b>Production setup:</b> HTTPS, <code>APP_ENV=production</code>, a dedicated least-privilege database user with a password, the queue worker under a supervisor. The posture checklist on Platform &rarr; Operations tracks these.</li>
+    <li><b>Live checks I could not do:</b> Meta delivery including voice notes and images, and a running TencentDB Agent Memory service (<code>php cli/verify_tencent.php</code> lists its real tool names).</li>
+    <li><b>Load and soak test</b> to find real capacity numbers, and a first PHPStan run.</li>
+    <li><b>Controller, service and repository refactor</b> (F32), the largest remaining code-quality item.</li>
+    <li><b>Documents:</b> privacy notice and data-processing addendum; optional KMS, per-tenant keys and table partitioning.</li>
+    <li><b>Reply speed:</b> each Gemini call took between 0.7 s and 8 s in testing, so replies with tool calls took 6 to 17 s. Try a faster model or a lower <code>GEMINI_THINKING</code> level and compare on your own traffic.</li>
+  </ol></div>
+</section>
+
+<section aria-labelledby="rm">
+  <h2 id="rm">Original fix order</h2>
+  <div class="phases">
+    <div class="phase"><div class="when">Before any real customer · about 1 week</div><h3>Stop the data loss and the obvious holes</h3>
+      <ul><li>Queue table and worker so the webhook only stores and answers (F01, F02)</li><li>Conversation lock and unique keys (F03)</li><li>Suspended-tenant check, safe defaults, dedicated DB user (F05, F06)</li><li>Token budget and Gemini settings (F07, F37)</li><li>Tool argument rules, default-deny response fields (F08, F09)</li><li>Owner-only tool tests; pause campaign launch until F12 is fixed (F11)</li></ul></div>
+    <div class="phase"><div class="when">Weeks 2 to 4</div><h3>Make it operable and provable</h3>
+      <ul><li>MFA, audit log, login throttling, HTTP headers (F04, F19)</li><li>Tests, static analysis and CI, starting with tenant isolation (F15)</li><li>Structured logs, metrics, alerts, staff notifications (F16, F26)</li><li>LLM gateway with rate limits and budgets (F14)</li><li>Foreign keys, UTC time, migrations (F22, F24)</li><li>Channel health and setup wizard (F33)</li></ul></div>
+    <div class="phase"><div class="when">30 to 90 days</div><h3>Scale and deepen</h3>
+      <ul><li>Embeddings with hybrid search, per-tenant index (F23, F28)</li><li>Voice notes and images (F27)</li><li>Retention, export and delete-my-data jobs (F17)</li><li>Refactor to controllers, services and repositories (F32)</li><li>Redis sessions, read replica, load tests at 10x expected volume</li><li>Inbox upgrades: search, assign, notes, live updates (F34)</li></ul></div>
+  </div>
+</section>
+
+<section aria-labelledby="ta">
+  <h2 id="ta">Target architecture</h2>
+  <p class="muted" style="margin:0;max-width:68ch">The change that matters most is separating "receive" from "reply". Everything else in the list hangs off that split.</p>
+  <div class="diagram"><pre class="mermaid">
+flowchart LR
+  Meta[Meta webhooks] --> Edge[Webhook endpoint: verify, store, answer 200]
+  Edge --> Q[(Event queue)]
+  Q --> W[Worker pool with per-conversation lock]
+  W --> LLM[LLM gateway: limits, breaker, budgets]
+  LLM --> G[Gemini]
+  W --> TG[Tool gateway: validate, cache, SSRF-safe]
+  TG --> ERP[Tenant ERP / CRM]
+  W --> M[Memory: MySQL or TencentDB]
+  W --> Out[Outbound sender: retry and status]
+  Out --> Meta
+  W --> DB[(MySQL)]
+  UI[Dashboard and inbox] --> DB
+  </pre></div>
+</section>
+
+<section aria-labelledby="sc2">
+  <h2 id="sc2">Scope and limits of this review</h2>
+  <div class="notes">
+    <p style="margin:0 0 8px"><b>Original review:</b> a read-through of all application files plus manual smoke tests. <b>After the fixes:</b> 33 automated tests (unit, tenant-isolation attacks, role limits, webhooks, lockout, session revocation, invite links), a live Gemini run in Sinhala and English with tool calls, a signed webhook through the queue worker, and a check of all 24 pages and the blocked paths under Apache.</p>
+    <p style="margin:0"><b>Still not done:</b> penetration testing, load testing, live Meta delivery (including voice notes and images) and a running TencentDB Agent Memory service. Findings about those areas come from reading the code and the vendors' documented behaviour. F07 and F37 depend on current Gemini guidance and should be confirmed against Google's docs and a real run. The scores are my judgement, not measurements.</p>
+  </div>
+</section>
+</main>
+
+<script>
+var SC = [
+ ["Security",5.5,"Strong basics, weak access control and defaults.","<em>To reach 8:</em> MFA, session controls, safe defaults, argument validation, audit log."],
+ ["Tenant isolation",7,"Every query is tenant-scoped; customer-bound tool params verified.","<em>To reach 8:</em> tenant-aware repository base class and automated isolation tests."],
+ ["AI agent design and safety",6,"Grounded tool loop with handoff; injection and memory-poisoning paths remain.","<em>To reach 8:</em> untrusted-data handling, code-level policy checks, eval suite."],
+ ["Integrations (Meta, connectors)",5.5,"Works on paper; wrong-number and campaign issues, no ERP cache or breaker.","<em>To reach 8:</em> channel-scoped contacts, retries, delivery status, connector gateway."],
+ ["Concurrency and reliability",3,"Inline processing, no locks, events lost on crash.","<em>To reach 8:</em> durable queue, per-conversation lock, retries, dead-letter view."],
+ ["Scalability",3.5,"Bound to Apache threads, one shared Gemini key, global full-text indexes.","<em>To reach 8:</em> worker pool, LLM gateway, per-tenant retrieval, Redis sessions."],
+ ["Database design",5,"Reasonable tables and indexes; no foreign keys, local-time stamps, unbounded growth.","<em>To reach 8:</em> FKs, UTC, migrations, retention and partitioning."],
+ ["Architecture and code quality",4.5,"Readable, but SQL and HTML share files, static DB class, swallowed errors.","<em>To reach 8:</em> controllers, services, repositories, DI, Composer, static analysis."],
+ ["Usability and UX",6,"Clear, consistent interface; setup and inbox miss daily-driver features.","<em>To reach 8:</em> channel wizard and health, inbox search, assignment, notifications."],
+ ["Observability and operations",2.5,"Only a PHP error log and a tool log table.","<em>To reach 8:</em> structured logs, metrics, alerts, health checks, runbooks."],
+ ["Testing and QA",2,"Manual smoke scripts only; no automated tests or CI.","<em>To reach 8:</em> PHPUnit, isolation tests, AI evals in three languages, load tests, CI gates."],
+ ["Privacy and compliance",3.5,"No retention, export, consent log or opt-out handling.","<em>To reach 8:</em> retention jobs, delete-my-data, consent records, DPA and notices."]
+];
+SC = [
+ ["Security",7.5,"Was 5.5. Argument rules, default-deny fields, SSRF pinning, headers, lockout, audited admin access, one-time links.","<em>Still open:</em> MFA (excluded by request), dedicated DB user, penetration test."],
+ ["Tenant isolation",8.5,"Was 7. Foreign keys, channel-scoped contacts, tenant-scoped retrieval, and cross-tenant attack tests that pass.","<em>Still open:</em> composite tenant keys, repository base class."],
+ ["AI agent design and safety",7.5,"Was 6. Untrusted-data framing, memory poisoning filter, output guard, summaries, hybrid search, retries. Verified live in Sinhala and English.","<em>Still open:</em> adversarial eval set, prompt caching."],
+ ["Integrations (Meta, connectors)",7,"Was 5.5. Channel health and verify, retries, delivery alerts, ERP cache and breaker, voice and image reading.","<em>Still open:</em> live Meta media test, delivery-status webhooks."],
+ ["Concurrency and reliability",8,"Was 3. Durable queue, ordered per customer, retries, dead-letter with retry button. Webhook answers in about 20 ms.","<em>Still open:</em> soak test with several workers."],
+ ["Scalability",6,"Was 3.5. Worker pool, gateway limits and budgets, per-tenant retrieval.","<em>Still open:</em> load test, Redis sessions, read replica, partitioning."],
+ ["Database design",7.5,"Was 5. Foreign keys and cascades, UTC, migrations, indexes, retention jobs.","<em>Still open:</em> partitioning, composite keys."],
+ ["Architecture and code quality",5.5,"Was 4.5. Services, structured logging, tests and CI added; pages still mix SQL and HTML.","<em>Still open:</em> controllers, services and repositories refactor."],
+ ["Usability and UX",7.5,"Was 6. Channel checklist, inbox search, assignment, notes, saved replies, alerts, Sinhala/Tamil fonts.","<em>Still open:</em> onboarding wizard, WebSocket updates, WCAG audit."],
+ ["Observability and operations",8,"Was 2.5. Usage and monitoring pages for tenants and admins, alerts, audit log, health endpoint, JSON logs.","<em>Still open:</em> Prometheus endpoint, external alert routing."],
+ ["Testing and QA",6.5,"Was 2. 33 automated tests, CI workflow, live end-to-end runs.","<em>Still open:</em> load tests, PHPStan run, AI evals in three languages."],
+ ["Privacy and compliance",7.5,"Was 3.5. Retention, export, permanent delete, consent records, STOP handling, memory switch.","<em>Still open:</em> privacy notice and data-processing addendum."]
+];
+var ST = {
+ F01:["fixed","Webhook only verifies, stores and answers (about 20 ms measured). cli/worker.php processes the queue; an inline fallback runs only when no worker is alive."],
+ F02:["fixed","Events are stored first with status, attempts, back-off and a dead-letter state. Failed messages can be retried from Monitoring."],
+ F03:["fixed","Per-sender ordering in the queue plus a per-contact lock; contact creation is atomic. Covered by tests."],
+ F04:["partial","Login lockout by account and IP, audited impersonation that needs a reason, audit log pages. MFA left out as requested."],
+ F05:["fixed","Disabled users and suspended tenants lose their session on the next request (tested)."],
+ F06:["partial","APP_ENV=production forces debug and private hosts off; a posture checklist shows what is left. You still need to create a dedicated DB user."],
+ F07:["fixed","Output cap 4096 with one automatic retry at double size; truncation is counted in Monitoring."],
+ F08:["fixed","Per-parameter pattern, enum, length and range; path values restricted; dot segments rejected; curl path-as-is. Tested."],
+ F09:["fixed","Fields must be allow-listed or explicitly exposed; secret-named keys always dropped; card-like numbers masked."],
+ F10:["partial","Untrusted-data framing, sanitised names, unverified-notes label, entitlement-style facts rejected, credential output guard. A mitigation, not a guarantee."],
+ F11:["fixed","Playground and tool tests are owner-only, test mode blocks write tools, every use is audited."],
+ F12:["fixed","Atomic claims and a global lock, audience limited to the channel and explicit opt-in, STOP and START in three languages."],
+ F13:["fixed","Contacts and conversations are keyed by channel."],
+ F14:["fixed","Gateway adds per-tenant and global rate limits, monthly token budget, circuit breaker and a fallback model."],
+ F15:["partial","33 automated tests including tenant-isolation attacks, plus a CI workflow. PHPStan is configured but not yet run; no load tests."],
+ F16:["fixed","Structured JSON logs with request ids, /health, tenant and platform monitoring, alerts with webhook and e-mail."],
+ F17:["partial","Retention setting, contact export and permanent delete, consent records, memory switch. Privacy notice and data-processing addendum still to write."],
+ F18:["fixed","Resolve once, vet IPv4 and IPv6, pin the connection. Tested."],
+ F19:["fixed","CSP without inline scripts, frame, nosniff, referrer and permissions headers, Secure cookie on HTTPS, idle and absolute session limits, POST-only logout."],
+ F20:["fixed","One-time invite and reset links, 12-character policy with common-password check, forced change."],
+ F21:["partial","Key ids, a rotation command and an optional secrets file outside the web root. No KMS or per-tenant keys."],
+ F22:["fixed","Foreign keys with cascades; deleting a tenant removes everything (tested)."],
+ F23:["fixed","Semantic search scans only the tenant's passages (up to 1,500); the keyword leg filters by tenant in the query."],
+ F24:["partial","UTC storage with per-tenant timezone, migration runner, new indexes, retention jobs. No table partitioning yet."],
+ F25:["fixed","One 28 s deadline shared by model and tool calls; API time limit set."],
+ F26:["fixed","Holding message and handoff on quota, retries for transient AI errors, alerts, optional auto-resume, business hours in the prompt."],
+ F27:["partial","Voice notes and images are downloaded and turned into text with Gemini. Not yet tested with real Meta media."],
+ F28:["fixed","Hybrid search with Gemini embeddings, checked live in Sinhala. Unanswered questions are logged."],
+ F29:["partial","Rolling summaries, tool notes in history, per-agent tool lists. No prompt caching."],
+ F30:["fixed","Cache, per-connector breaker, GET retry, truncation at item boundaries, confirm-before-write and idempotency keys."],
+ F31:["partial","Breaker, short timeouts and a verify CLI. Not yet run against a live TencentDB service."],
+ F32:["open","Pages still mix SQL and HTML. Logging, services and tests were added but there is no controller or repository refactor."],
+ F33:["fixed","Per-channel setup checklist, Verify connection button, last-webhook time, token-error alerts."],
+ F34:["partial","Search, assignment, notes, saved replies, SLA badges, desktop alerts and paging. Still polling (smarter), not WebSockets."],
+ F35:["partial","Sinhala and Tamil fonts, ARIA labels, keyboard-focusable rows. No formal WCAG audit."],
+ F36:["fixed","Test traffic excluded from quotas and dashboards; handoffs have their own table."],
+ F37:["fixed","Default 1.0, range 0 to 2."]
+};
+var STN = {fixed:"Fixed",partial:"Partly done",open:"Not done"};
+function statusOf(id){return ST[id]?ST[id][0]:"open";}
+function stBadge(id){var s=statusOf(id);return '<span class="st st-'+s+'">'+STN[s]+'</span>';}
+var stc={fixed:0,partial:0,open:0};
+var F = [
+["F01","crit","Concurrency","The AI runs inside the webhook request","app/webhook.php:26-52","Reply generation (Gemini up to 45 s with 3 tries, up to 5 tool rounds) runs in the same PHP process after the 200 is sent. The early-close trick relies on `fastcgi_finish_request`; on Apache mod_php it depends on Content-Length and flushing, which compression or proxies can defeat.","About 150 simultaneous chats exhaust the Apache thread pool. If the response is delayed, Meta times out, retries, and can disable the webhook after repeated failures.","The webhook only verifies the signature, stores the raw event in an `inbound_events` table and returns 200. A worker pool (PHP CLI under systemd or supervisor, or Redis Streams / SQS) consumes events. Target: webhook under 100 ms."],
+["F02","crit","Concurrency","Events are marked as processed before they are handled","app/webhook.php:46-48","`INSERT IGNORE INTO webhook_events` runs first, then `handleInbound`. A crash, timeout or Gemini outage after that point loses the message. Meta's retry is dropped as a duplicate.","Silent message loss. The customer is never answered and nobody is alerted.","Give events a status (received, processing, done, failed) with attempts, next_retry_at and a lock owner. Process idempotently using the provider message id. Show failed events in the dashboard with a retry button."],
+["F03","crit","Concurrency","No per-conversation lock; find-or-create is racy","src/Services/Chat.php:12-30","Two quick messages from one customer start two agent loops at once. First messages arriving together can create duplicate contacts (unique-key error, HTTP 500) or two open conversations.","Out-of-order or duplicate replies, double tool calls, duplicate conversations in the inbox.","Use `INSERT ... ON DUPLICATE KEY` for contacts, a unique key for one open conversation per contact and channel, and `GET_LOCK('conv:ID')` or a queue partitioned by conversation. Batch messages that arrive within 1 to 2 seconds into one turn."],
+["F04","crit","Security","Super admin has no MFA, impersonation is unaudited, login throttle is bypassable","src/Core/Auth.php; app/pages/admin/tenants.php:4-8; app/login.php:12","One password gives access to every tenant's conversations. Impersonation leaves no record. The login limit counts attempts in `$_SESSION`, so dropping the cookie resets it.","A single phished or guessed password exposes all customers' chats and tools. Brute force is effectively unthrottled.","Require TOTP or WebAuthn for super admins and owners. Throttle by account and IP in the database or Redis with exponential backoff. Add an append-only `audit_log` (actor, tenant, action, IP, time) and require a reason when impersonating."],
+["F05","high","Security","Suspended tenants keep working sessions","src/Core/Auth.php:7-9","Tenant status is checked at login and in the webhook only. `Auth::user()` and `tenantId()` never look at it.","Suspending a non-paying or abusive tenant does not lock them out of the dashboard or stop tool tests.","Check `tenants.status` in `Auth::user()` (cache 60 s) and end the session. Add a `session_epoch` on users so you can revoke all sessions."],
+["F06","high","Security","Unsafe defaults in `.env.example`","`.env.example`: APP_DEBUG=1, ALLOW_PRIVATE_HOSTS=1, DB_USER=root","Debug mode prints stack traces to the browser. Private-host connectors allow calls into your own network. The database user is root with no password.","One forgotten setting in production leaks code paths and opens internal services to tenant-defined URLs.","Ship production-safe defaults and an `APP_ENV` switch. Refuse to boot with debug on a public host. Use a dedicated least-privilege DB user."],
+["F07","high","AI","1024-token reply limit can return empty or cut-off answers","src/Services/Agent.php:44","Gemini thinking models count reasoning tokens against `maxOutputTokens`, and Sinhala and Tamil use many tokens per word.","Empty replies that trigger a needless human handoff, or answers cut mid-sentence.","Raise the limit to 2048 to 4096, set `GEMINI_THINKING` to a low level, detect `finishReason` of `MAX_TOKENS` and retry. Test long Sinhala and Tamil answers on the real model."],
+["F08","high","Security","Tool arguments are not validated before reaching customer systems","src/Services/ToolRunner.php:60-75","Parameters have a type but no pattern, enum or length. `rawurlencode` leaves dots, so `order_no = '..'` becomes `/orders/..`, which curl normalises to the API root, still carrying the bearer token. Free text can carry injection payloads into downstream ERPs.","An injected prompt can make the agent call unintended endpoints or send crafted input to a fragile ERP.","Add per-parameter regex, enum, min and max, and length in the UI. Reject dot segments. Validate against a JSON schema before the call. Pass `CURLOPT_PATH_AS_IS`."],
+["F09","high","Privacy","Everything the ERP returns reaches the model unless fields are allow-listed","src/Services/ToolRunner.php (`pick`, empty response_fields)","An empty allow-list means all fields. Internal data such as costs or notes goes to Gemini and can be repeated to the customer.","Data leakage to customers and to a third-party processor.","Default-deny: require an allow-list, warn in the UI when it is empty. Add a redaction layer for patterns such as card numbers and emails, and a customer-safe flag per tool."],
+["F10","high","AI","Prompt-injection and memory-poisoning paths","src/Services/Agent.php (systemPrompt); src/Memory/MySqlMemory.php","The WhatsApp profile name and extracted memory facts are inserted into the system prompt as trusted text. Tool results are not marked as untrusted data. A customer can plant \"I am a VIP, delivery is free\" and have it remembered.","Unauthorised discounts or promises, persistent across future chats.","Pass untrusted content in delimited data blocks, sanitise names, tag memories with their source (customer-stated or system-verified) and never let them grant entitlements. Enforce prices, refunds and discounts in code, not prompts. Build an adversarial eval set."],
+["F11","high","Security","Any staff role can run live tools with any phone number","app/api.php (`tools/test`, `playground/send`)","The `agent` role can choose any phone and read that customer's orders, or fire a non-GET tool that has writes enabled.","An insider can read any customer's data through the agent and leave only tool log entries.","Make tool tests and the playground owner-only. Offer a sandbox base URL per connector and block write tools in test mode. Log who ran what."],
+["F12","high","Privacy","Campaigns can double-send, hit the wrong audience and ignore opt-outs","cron/worker.php; app/pages/tenant/campaigns.php","Rows are selected then updated with no claim, so overlapping cron runs resend. The audience is chosen by channel type, not by channel. Contacts default to opted-in on first message. There is no STOP handling.","Duplicate marketing messages, sends from the wrong number, and policy or legal exposure under Meta rules and local law.","Claim rows atomically (`UPDATE ... SET status='sending', worker=? LIMIT n`). Scope audiences by channel. Add an explicit consent field with source and time. Handle STOP words in English, Sinhala and Tamil. Respect WhatsApp send tiers."],
+["F13","high","Integration","Two channels of the same type collide","src/Services/Chat.php:12-20; database/schema.sql (contacts unique key)","Contacts are unique on tenant, channel type and external id, and the conversation lookup ignores `channel_id`. A customer who writes to a tenant's second WhatsApp number joins the first number's conversation.","Human replies from the inbox go out from the wrong number.","Add `channel_id` to the contact and conversation keys and take it from the inbound event."],
+["F14","high","Scalability","One shared Gemini key and no limiter","src/Services/Gemini.php","A busy tenant can use up the platform's requests per minute. Retries sleep inside the worker. No circuit breaker, no fallback model, no per-tenant spend cap.","One tenant's spike slows or stops every other tenant. Costs are unbounded until the monthly reply cap.","Add an LLM gateway: token bucket per tenant and global, priority queue, circuit breaker, fallback model, per-tenant spend caps and alerts. Keep the per-tenant key option."],
+["F15","high","QA","No automated tests, CI or static analysis","repository root","There are no unit, integration or security tests and no Composer, linters or pipeline. Only manual smoke scripts exist.","Regressions go unnoticed, and a single missed `tenant_id` filter would leak data across tenants.","Add Composer and PHPUnit with tenant-isolation tests first, PHPStan level 6 or higher, Semgrep, `composer audit` and a CI pipeline. Build an AI eval harness with golden conversations in English, Sinhala and Tamil, plus k6 load tests."],
+["F16","high","Ops","No structured logging, metrics or alerting","config/bootstrap.php (error_log only)","Failures go to a PHP log file. Nothing records request ids, tenants or latency. Webhook failures, expired Meta tokens and Gemini errors are invisible.","You learn about outages from customers.","Write JSON logs with request, tenant and conversation ids. Add Sentry, metrics (latency, tool success, tokens, queue depth), a `/health` endpoint, and alerts for webhook failures, token expiry and error rates."],
+["F17","high","Privacy","No retention, export or deletion of customer data","src/Memory; app/pages/tenant/contacts.php","Only AI memory can be erased. Messages, contacts and tool logs are kept forever. There is no consent record, and customer text goes to Google with no disclosure flow.","Gaps against Sri Lanka's PDPA and similar laws, and against Meta's platform terms.","Per-tenant retention (for example 12 months), a delete-or-anonymise job across all tables, data export, a consent log, a privacy-notice template, a data-processing addendum, and a switch to disable memory."],
+["F18","med","Security","SSRF check can be bypassed by DNS rebinding","src/Services/ToolRunner.php:44-52, 88-91","The host is resolved to check it, then curl resolves it again. IPv6-only hosts are not resolved by `gethostbynamel`.","A hostile DNS answer can point a tenant connector at internal services once the check has passed.","Resolve once and pin with `CURLOPT_RESOLVE`. Check IPv4 and IPv6, block metadata ranges, offer a per-tenant host allow-list and route calls through an egress proxy."],
+["F19","med","Security","Missing HTTP hardening and session limits","config/bootstrap.php:37; index.php","The session cookie has no `Secure` flag. No HSTS, CSP, frame protection, nosniff or no-store headers. No idle or absolute session timeout. Logout and impersonation work over GET.","Clickjacking, cached sensitive pages, and cross-site GET triggers for state changes.","Add a headers middleware, `Secure` and `SameSite=Strict` on admin, 30-minute idle timeout, POST-only state changes. Remove inline handlers and styles so a strict CSP is possible."],
+["F20","med","Security","No password reset, invites or forced change of temporary passwords","app/pages/tenant/team.php; app/pages/admin/tenants.php","Owners set a temporary password by hand and share it. There is no reset flow and the minimum length is 8.","Weak, shared credentials and manual support work.","Expiring invite and reset links, minimum 12 characters with a breached-password check, forced change on first login."],
+["F21","med","Security","Secrets handling is basic","src/Core/Crypto.php; .env","One `APP_KEY` encrypts everything, with no key id or rotation. `.env` sits in the web root and is protected only by Apache rules.","A leaked key exposes every tenant's tokens, and rotation means re-entering all secrets.","Add key ids (`v2:kid:...`) with a rotation job, keep keys outside the web root or in a KMS, and use per-tenant data keys."],
+["F22","med","Database","No foreign keys, cascades or tenant offboarding","database/schema.sql","Relationships are enforced only in PHP. Deleting an agent, channel or connector leaves orphans. Deletes are hand-written per page and there is no tenant deletion.","Orphaned rows, inconsistent reports and a hard path to full data removal.","Add foreign keys with explicit ON DELETE rules, composite `(tenant_id, id)` keys so a child cannot point at another tenant's parent, plus soft delete and a purge job."],
+["F23","med","Database","Full-text indexes span all tenants","knowledge_chunks, memories; src/Services/Knowledge.php","`MATCH ... AGAINST` runs on one global index and filters by tenant afterwards. Cost grows with total platform data and relevance statistics are shared.","Slower retrieval as tenants grow, and a minor cross-tenant ranking side effect.","Use a per-tenant vector index (Gemini embeddings with MariaDB vectors, pgvector or Qdrant) with the tenant filter applied first, plus hybrid keyword and vector search."],
+["F24","med","Database","Unbounded tables, local-time stamps, ad hoc migrations","schema.sql; config/bootstrap.php; install.php","Messages, tool logs and webhook events grow forever. Times are stored in +05:30 with Colombo hard-coded. The installer splits SQL on semicolons. Dashboard queries filter on `created_at` without a matching index.","Slow dashboards at volume, wrong times for non-Sri Lankan tenants, fragile upgrades.","Store UTC and convert per tenant. Partition or archive by month, add TTL jobs, use a migration tool (Phinx or Flyway), add `(tenant_id, created_at)` indexes."],
+["F25","med","Concurrency","Worst-case run time exceeds PHP limits","app/api.php (no set_time_limit); src/Services/Gemini.php","The playground endpoint keeps PHP's default 30 s limit while Gemini allows 45 s per try with 3 tries, and tools allow up to 30 s each. The webhook caps at 120 s.","Fatal timeouts mid-reply and half-finished state.","Set one deadline per turn (about 25 s), Gemini timeout 20 s with one retry, share the budget across tool rounds, and let the playground poll for the result."],
+["F26","med","AI","Quota, rate-limit and error cases fail silently or flip to human for good","src/Services/Chat.php (handleInbound)","Over quota, rate limited, or no agent: the customer gets no reply and staff get no alert. Any Gemini error hands the chat to a human with no automatic return.","Customers ignored during outages, and inboxes full of chats that never go back to the AI.","Always send a short holding message, notify staff (email, WhatsApp or push), retry transient errors, auto-resume the AI after a set time, and add business-hours rules."],
+["F27","med","AI","Voice notes and images are ignored","src/Services/Meta.php (parse)","Media is turned into a placeholder such as \"[customer sent a voice message]\".","Voice notes are common with Sri Lankan customers, and the agent cannot understand them.","Fetch media through the Graph API, send audio and images to Gemini multimodal input, enforce size and type limits, store files in object storage."],
+["F28","med","AI","Retrieval is keyword-only","src/Services/Knowledge.php","Matching is lexical, with a LIKE fallback. It handles typos, paraphrase and Sinhala or Tamil inflection poorly.","Correct answers exist in the knowledge base but are not found.","Embeddings with hybrid search, document versions, source citations in replies, and a report of unanswered questions to improve content."],
+["F29","med","AI","Shallow context handling","src/Services/Agent.php (history)","Only the last 24 text messages are sent. Tool results are not kept, so follow-ups re-query. Every tool is offered to every agent, so prompts grow with each tool.","Higher cost and latency, and weaker tool selection as catalogs grow.","Add a rolling summary, keep compact tool results in context, allow tools per agent, and use context caching for the static prompt."],
+["F30","med","Integration","ERP calls have no cache, breaker or write safety","src/Services/ToolRunner.php","Every chat hits the ERP. A slow ERP holds a worker up to the timeout. Oversized results are cut mid-JSON. Write tools have no confirmation step or idempotency key.","ERP overload, stuck workers, malformed tool results and double-submitted writes.","Short-TTL cache for catalog reads, a circuit breaker per connector, retries for GET only, structured truncation, confirm-before-write with idempotency keys, and ERP-to-CaliChat webhooks for pushed updates."],
+["F31","med","Integration","Memory adapter is unverified and unprotected","src/Memory/TencentMemory.php","Tool names and arguments are assumptions. A down sidecar costs a 2 s connect plus up to 6 s per call before falling back, and capture runs in the request path.","Added latency on every message when the memory service is unhealthy.","Verify against `/v3/tools/list`, add a contract test, a breaker with cooldown, async capture, and a namespace-isolation test."],
+["F32","med","Architecture","Controllers, SQL and HTML live in the same files","app/pages/**; src/Core/Db.php","Pages run in global scope and mix SQL with markup. `Db` is static. Several `catch (\\Throwable $e) {}` blocks hide errors. There is no Composer or DI, and CRUD code repeats.","Slow, risky changes and hard testing.","Move to routes, controllers, services and repositories with a tenant-scoped base repository, a DI container, a template engine and one central error handler."],
+["F33","med","UX","Channel setup has no guidance or health check","app/pages/tenant/channels.php","No test message, no last-webhook-received time, no token-expiry check and no step-by-step Meta wizard.","Setup is the hardest step, and tenants cannot tell why nothing arrives.","Guided wizard (WhatsApp Embedded Signup where possible), a health badge, a send-test button, and a token check through Meta's debug_token."],
+["F34","med","UX","Inbox lacks daily-driver features","app/pages/tenant/inbox.php; assets/js/app.js","Polling every 5 s per open tab, no search, assignment, internal notes, saved replies, labels or sound alerts. Conversation rows are not keyboard-focusable.","Slow team workflows and extra database load as staff open more tabs.","Server-sent events or WebSocket, search, assignment, notes, saved replies, SLA timers, and proper roles and focus handling."],
+["F35","low","UX","Language and accessibility details","assets/css/app.css; app/layout.php","Inter has no Sinhala or Tamil glyphs, icon-only buttons have no labels, the chat has no live region, and there is no dark mode.","Inconsistent rendering of local-language text and poorer screen-reader use.","Add Noto Sans Sinhala and Tamil, ARIA labels and live regions, and run a WCAG 2.2 AA pass."],
+["F36","low","Ops","Dashboard numbers are slightly off","app/pages/tenant/dashboard.php; src/Services/Chat.php","Playground traffic counts toward quota and dashboards. Resuming the AI clears the handoff reason, so the resolution rate looks better than it is. Handoff system messages count as outbound.","Misleading metrics and quota use.","Add an `is_test` flag and exclude it, keep a separate handoff history table, and do not count system messages as outbound."],
+["F37","low","AI","Default temperature may be too low for Gemini 3 models","app/pages/tenant/agents.php; src/Services/Agent.php:44","The default is 0.4 and the UI limits the range to 0 to 1. Google's guidance for the Gemini 3 family is to leave temperature at 1.0. Confirm against current docs.","Possible looping or weaker reasoning at low values.","Default to 1.0, offer a lower value as an advanced setting, and get consistency from tool grounding and clear instructions."]
+];
+var SEVN = {crit:"Critical",high:"High",med:"Medium",low:"Low"};
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function fmt(s){return esc(s).replace(/`([^`]+)`/g,"<code>$1</code>");}
+function band(n){return n<4?"b-bad":(n<6.5?"b-mid":"b-ok");}
+
+// counts
+var cnt={crit:0,high:0,med:0,low:0}; F.forEach(function(f){cnt[f[1]]++;stc[statusOf(f[0])]++;});
+document.getElementById("counts").innerHTML=Object.keys(cnt).map(function(k){return '<span class="pill s-'+k+'"><b>'+cnt[k]+'</b> '+SEVN[k]+'</span>';}).join("")+'<span class="pill" style="--c:var(--good)"><b>'+stc.fixed+'</b> fixed</span><span class="pill" style="--c:var(--med)"><b>'+stc.partial+'</b> partly done</span><span class="pill" style="--c:var(--crit)"><b>'+stc.open+'</b> not done</span>';
+
+// scores
+document.getElementById("scores").innerHTML=SC.map(function(s){
+  return '<div class="score '+band(s[1])+'"><div class="top"><b>'+esc(s[0])+'</b><span class="n">'+s[1].toFixed(1)+'</span></div>'+
+  '<div class="bar" role="img" aria-label="'+esc(s[0])+' '+s[1]+' out of 10"><i style="width:'+(s[1]*10)+'%"></i></div><p>'+esc(s[2])+'</p><p>'+s[3]+'</p></div>';}).join("");
+
+// findings
+var cats=[]; F.forEach(function(f){if(cats.indexOf(f[2])<0)cats.push(f[2]);}); cats.sort();
+var sel=document.getElementById("cat"); cats.forEach(function(c){var o=document.createElement("option");o.value=c;o.textContent=c;sel.appendChild(o);});
+var list=document.getElementById("list"), sev="all", open=false;
+function render(){
+  var cat=sel.value, n=0, stat=document.getElementById("stat").value;
+  list.innerHTML=F.filter(function(f){return (sev==="all"||f[1]===sev)&&(cat==="all"||f[2]===cat)&&(stat==="all"||statusOf(f[0])===stat);}).map(function(f){
+    n++;
+    return '<details class="f s-'+f[1]+'"'+(open?' open':'')+'><summary><span class="fid">'+f[0]+'</span><span class="sev">'+SEVN[f[1]]+'</span><span class="ft">'+esc(f[3])+'</span>'+
+    '<span class="sum">'+stBadge(f[0])+' <span class="cat">'+esc(f[2])+'</span> &nbsp;<code>'+esc(f[4])+'</code></span></summary>'+
+    '<dl class="body" style="margin:0"><div><dt>Problem</dt><dd>'+fmt(f[5])+'</dd></div><div><dt>Impact</dt><dd>'+fmt(f[6])+'</dd></div><div><dt>Fix</dt><dd>'+fmt(f[7])+'</dd></div><div class="now st-'+statusOf(f[0])+'"><dt>Status</dt><dd>'+stBadge(f[0])+' '+esc(ST[f[0]]?ST[f[0]][1]:"")+'</dd></div></dl></details>';
+  }).join("")||'<p class="muted">No findings match these filters.</p>';
+  document.getElementById("shown").textContent="Showing "+n+" of "+F.length;
+}
+document.querySelectorAll(".chip").forEach(function(b){b.addEventListener("click",function(){
+  sev=b.getAttribute("data-sev"); document.querySelectorAll(".chip").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false");}); render();});});
+sel.addEventListener("change",render);
+document.getElementById("stat").addEventListener("change",render);
+document.getElementById("toggle").addEventListener("click",function(){open=!open;this.textContent=open?"Collapse all":"Expand all";render();});
+render();
+</script>

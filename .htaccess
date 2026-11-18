@@ -1,0 +1,15 @@
+Options -Indexes
+RewriteEngine On
+# Never serve application internals, tests, tooling, secrets or logs directly.
+# Only block paths that really exist on disk: /app/dashboard etc. are routes handled by index.php.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^(config|database|src|app|storage|cron|cli|tests|vendor|\.github)(/|$) - [F,L]
+RewriteRule ^(\.env.*|install\.php|composer\.(json|lock)|phpstan\.neon|README\.md|CHANGELOG\.md|start-worker\.bat)$ - [F,L]
+RewriteRule \.(sql|log|bak|swp|env)$ - [F,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
+# Keep the Authorization header available to PHP (mock ERP and API clients)
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

@@ -1,0 +1,914 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CaliChat User Manual</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky contents rail on the left, one 760px reading column on the right. Indigo accent to match the product. */
+:root{
+  --bg:#F6F5FC; --surface:#FFFFFF; --ink:#16162B; --ink2:#46465F; --line:#E6E5F2; --brand:#5B5BF0; --brand-ink:#4343CC; --tint:#EFEFFF;
+  --tip:#0B8A63; --tip-bg:#E4F6EF; --note:#2F5FD0; --note-bg:#E8EFFE; --warn:#A86B00; --warn-bg:#FFF3D9; --stop:#C62F4A; --stop-bg:#FDE8EC;
+  --font:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif; --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--font);padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:0 80px}
+.wrap{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:270px minmax(0,1fr);gap:56px}
+a{color:var(--brand-ink)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+code,kbd{font-family:var(--mono);font-size:.86em;background:var(--tint);padding:1px 6px;border-radius:5px;word-break:break-word}
+h1,h2,h3{letter-spacing:-.02em;text-wrap:balance;margin:0}
+
+/* contents rail */
+.rail{position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding:28px 0 28px}
+.logo{display:inline-flex;align-items:center;gap:9px;background:var(--brand);border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink);padding:8px 13px;border-radius:10px;color:#fff;font-weight:800;font-size:15px}
+.logo i{font-style:normal;background:var(--ink);color:var(--bg);font-size:11px;padding:4px 6px;border-radius:6px}
+.rail .tag{font-size:11px;letter-spacing:.18em;color:var(--ink2);font-weight:600;margin:12px 4px 18px}
+.find{width:100%;font:inherit;font-size:14px;padding:9px 14px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink);margin-bottom:14px}
+.toc{display:flex;flex-direction:column;gap:1px;font-size:14.5px}
+.toc .grp{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);font-weight:700;margin:14px 10px 4px}
+.toc a{display:block;text-decoration:none;color:var(--ink2);padding:6px 10px;border-radius:8px;border-left:3px solid transparent}
+.toc a:hover{background:var(--tint)}
+.toc a.on{color:var(--brand-ink);background:var(--tint);border-left-color:var(--brand);font-weight:600}
+.toc a[hidden]{display:none}
+
+/* content */
+main{min-width:0;padding-top:40px}
+.hero{padding-bottom:30px;border-bottom:1px solid var(--line);margin-bottom:10px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);font-weight:600}
+.hero h1{font-size:clamp(34px,5.5vw,52px);line-height:1.05;font-weight:800;margin:10px 0 14px}
+.hero h1 b{color:var(--brand)}
+.hero p{font-size:18px;color:var(--ink2);max-width:60ch;margin:0}
+.paths{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:26px}
+.path{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:4px}
+.path:hover{border-color:var(--brand)}
+.path b{font-size:15px}.path span{font-size:13.5px;color:var(--ink2)}
+section.chap{padding:44px 0 6px;border-bottom:1px solid var(--line);max-width:760px}
+section.chap[hidden]{display:none}
+section.chap>h2{font-size:30px;font-weight:800;line-height:1.15;margin-bottom:14px}
+section.chap>h2 small{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-ink);font-weight:700;margin-bottom:8px}
+h3{font-size:19px;font-weight:700;margin:30px 0 8px}
+p{margin:0 0 14px}
+ul,ol{margin:0 0 16px;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.steps{list-style:none;padding:0;counter-reset:s;gap:12px}
+.steps>li{counter-increment:s;position:relative;padding-left:44px;min-height:30px}
+.steps>li::before{content:counter(s);position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.call{border-radius:12px;padding:13px 16px;margin:16px 0;font-size:15px;border-left:4px solid var(--c);background:var(--cb)}
+.call b:first-child{color:var(--c)}
+.tip{--c:var(--tip);--cb:var(--tip-bg)}.note{--c:var(--note);--cb:var(--note-bg)}.warn{--c:var(--warn);--cb:var(--warn-bg)}.stop{--c:var(--stop);--cb:var(--stop-bg)}
+.tablewrap{overflow-x:auto;margin:14px 0 20px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{width:100%;border-collapse:collapse;font-size:14.5px}
+th{text-align:left;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);padding:11px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 14px;border-top:1px solid var(--line);vertical-align:top}
+tr:first-child td{border-top:0}
+td.c,th.c{text-align:center}
+.yes{color:var(--tip);font-weight:700}.no{color:var(--ink2);opacity:.6}
+.kv{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:0;border:1px solid var(--line);border-radius:12px;background:var(--surface);margin:14px 0 20px;overflow:hidden}
+.kv>div{padding:11px 14px;border-top:1px solid var(--line)}.kv>div:nth-child(-n+2){border-top:0}
+.kv>div:nth-child(odd){font-weight:600;background:var(--tint)}
+.ui{display:inline-block;background:var(--surface);border:1px solid var(--line);border-bottom-width:2px;border-radius:7px;padding:0 8px;font-size:.9em;font-weight:600;white-space:nowrap}
+.flow{display:flex;gap:8px;flex-wrap:wrap;align-items:stretch;margin:16px 0 22px}
+.flow div{flex:1 1 120px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px}
+.flow div b{display:block;color:var(--brand-ink);margin-bottom:2px}
+.flow .arr{flex:0 0 auto;min-width:0;background:none;border:0;padding:0;align-self:center;color:var(--ink2);font-size:20px}
+details.faq{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin:0 0 10px;padding:2px 16px}
+details.faq summary{cursor:pointer;font-weight:600;padding:12px 0;list-style:none}
+details.faq summary::-webkit-details-marker{display:none}
+details.faq summary::after{content:"+";float:right;color:var(--brand-ink);font-weight:700}
+details.faq[open] summary::after{content:"−"}
+details.faq[open]{padding-bottom:6px}
+.end{max-width:760px;padding:30px 0;color:var(--ink2);font-size:14px}
+.noresult{max-width:760px;padding:40px 0;color:var(--ink2)}
+@media(max-width:940px){
+  .wrap{grid-template-columns:1fr;gap:0}
+  .rail{position:static;max-height:none;padding-bottom:6px}
+  .toc{display:none}.toc.open{display:flex}
+  .tocbtn{display:inline-block}
+  .paths{grid-template-columns:1fr}
+  main{padding-top:20px}
+}
+.tocbtn{display:none;font:inherit;font-weight:600;background:var(--surface);border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:8px 16px;margin-bottom:12px;cursor:pointer}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+
+<div class="wrap">
+<aside class="rail" aria-label="Contents">
+  <span class="logo"><i>CC</i>CALICHAT</span>
+  <div class="tag">USER MANUAL</div>
+  <button class="tocbtn" id="tocbtn" type="button" aria-expanded="false">Contents</button>
+  <input class="find" id="find" type="search" placeholder="Search this manual…" aria-label="Search this manual">
+  <nav class="toc" id="toc">
+    <div class="grp">Start here</div>
+    <a href="#overview">What CaliChat does</a>
+    <a href="#roles">Roles and access</a>
+    <a href="#signin">Signing in</a>
+    <a href="#firstrun">First sign-in and setup guide</a>
+    <div class="grp">Set up (owners)</div>
+    <a href="#setup">Setup checklist</a>
+    <a href="#settings">Settings</a>
+    <a href="#agents">AI Agents</a>
+    <a href="#knowledge">Knowledge</a>
+    <a href="#connectors">Connectors and tools</a>
+    <a href="#actions">AI actions and approvals</a>
+    <a href="#store">Store, Orders and Leads</a>
+    <a href="#templates">WhatsApp templates</a>
+    <a href="#followups">Follow-ups</a>
+    <a href="#ordertaking">How the AI takes orders</a>
+    <a href="#payments">Payments, slips and invoices</a>
+    <a href="#appts">Appointments</a>
+    <a href="#richmsg">Buttons, photos and voice</a>
+    <a href="#adsleads">Ads, lead forms and catalogue import</a>
+    <a href="#access">Team access and labels</a>
+    <a href="#bizreports">Reports</a>
+    <a href="#qualtests">Quality tests</a>
+    <a href="#billing">Sign-up, plans and billing</a>
+    <a href="#channels">Channels (Meta)</a>
+    <a href="#connect">One-click connect</a>
+    <a href="#twilio">Testing with Twilio</a>
+    <a href="#playground">Playground</a>
+    <div class="grp">Daily work</div>
+    <a href="#inbox">Inbox</a>
+    <a href="#contacts">Contacts and consent</a>
+    <a href="#campaigns">Campaigns</a>
+    <div class="grp">Oversight</div>
+    <a href="#monitoring">Usage and Monitoring</a>
+    <a href="#alerts">Alerts</a>
+    <a href="#team">Team and security</a>
+    <a href="#privacy">Privacy and data</a>
+    <div class="grp">Platform admins</div>
+    <a href="#admin">Platform console</a>
+    <div class="grp">Help</div>
+    <a href="#trouble">Troubleshooting</a>
+    <a href="#faq">FAQ</a>
+    <a href="#glossary">Glossary</a>
+  </nav>
+</aside>
+
+<main id="top">
+<header class="hero">
+  <div class="eyebrow">Version 1 · English, සිංහල and தமிழ் customers</div>
+  <h1>CaliChat <b>User Manual</b></h1>
+  <p>CaliChat answers your customers on WhatsApp, Messenger and Instagram with an AI agent that looks up real products and orders in your own systems. Your team can step in at any moment.</p>
+  <div class="paths">
+    <a class="path" href="#setup"><b>I am setting up</b><span>Owner checklist: from empty workspace to live in six steps.</span></a>
+    <a class="path" href="#inbox"><b>I answer customers</b><span>Inbox, handoffs, notes, saved replies.</span></a>
+    <a class="path" href="#trouble"><b>Something is wrong</b><span>Symptoms, causes and fixes.</span></a>
+  </div>
+</header>
+
+<section class="chap" id="overview">
+  <h2><small>Start here</small>What CaliChat does</h2>
+  <p>When a customer messages your business, CaliChat reads the message, decides what information it needs, fetches it from your systems (products, stock, orders, delivery status) or from your knowledge base (policies, FAQs), and replies in the customer's language. If it cannot help, or the customer asks for a person, it hands the chat to your team.</p>
+  <div class="flow" aria-label="How a message is handled">
+    <div><b>1. Customer writes</b>WhatsApp, Messenger or Instagram</div><div class="arr">→</div>
+    <div><b>2. Queue</b>Stored safely, answered in order</div><div class="arr">→</div>
+    <div><b>3. AI agent</b>Uses your tools and knowledge</div><div class="arr">→</div>
+    <div><b>4. Reply</b>Or hand off to your team</div>
+  </div>
+  <h3>What the AI can and cannot do</h3>
+  <ul>
+    <li><b>Can:</b> answer in English, Sinhala or Tamil; look up products, stock and the customer's own orders; answer policy questions from your knowledge base; remember preferences between chats; read voice messages and images (converted to text); ask for missing details such as an order number.</li>
+    <li><b>Cannot:</b> promise refunds, discounts or price changes; see another customer's data; change anything in your systems unless you enabled a write tool and the customer confirmed; read attachments other than voice notes and images.</li>
+  </ul>
+  <div class="call note"><b>Good to know. </b>The AI only states facts it gets from your tools or knowledge base. If it finds nothing, it says so and offers a human. It never makes up prices or order status.</div>
+</section>
+
+<section class="chap" id="roles">
+  <h2><small>Start here</small>Roles and access</h2>
+  <p>Every person has one role. Owners run the workspace; agents work the inbox.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Area</th><th class="c">Agent</th><th class="c">Owner</th></tr></thead><tbody>
+    <tr><td>Inbox: read, reply, take over, add notes, assign</td><td class="c yes">✓</td><td class="c yes">✓</td></tr>
+    <tr><td>Contacts: view and record marketing consent</td><td class="c yes">✓</td><td class="c yes">✓</td></tr>
+    <tr><td>Approve or reject actions the AI is waiting to take</td><td class="c yes">✓</td><td class="c yes">✓</td></tr>
+    <tr><td>Usage and Monitoring, Alerts (view and resolve)</td><td class="c yes">✓</td><td class="c yes">✓</td></tr>
+    <tr><td>View agents, connectors, knowledge, campaigns, team</td><td class="c yes">✓</td><td class="c yes">✓</td></tr>
+    <tr><td>Create or change agents, connectors, tools, knowledge, channels, campaigns</td><td class="c no">—</td><td class="c yes">✓</td></tr>
+    <tr><td>Settings, saved replies, notification setup</td><td class="c no">—</td><td class="c yes">✓</td></tr>
+    <tr><td>Invite people, reset passwords, disable accounts</td><td class="c no">—</td><td class="c yes">✓</td></tr>
+    <tr><td>Playground and tool tests</td><td class="c no">—</td><td class="c yes">✓</td></tr>
+    <tr><td>Export or permanently delete a contact; Audit log</td><td class="c no">—</td><td class="c yes">✓</td></tr>
+    </tbody></table></div>
+  <p><b>Platform administrator</b> is a separate role for whoever runs CaliChat itself. It is covered in <a href="#admin">Platform console</a>.</p>
+</section>
+
+<section class="chap" id="signin">
+  <h2><small>Start here</small>Signing in</h2>
+  <ol class="steps">
+    <li>Open the CaliChat address your administrator gave you and enter your email and password.</li>
+    <li>First time? Use the one-time link you were sent. It opens a page where you choose your own password. The link works once and expires after 72 hours.</li>
+    <li>If a temporary password was set for you, CaliChat asks you to change it before you continue.</li>
+  </ol>
+  <h3>Password rules</h3>
+  <ul><li>At least 12 characters.</li><li>Not a common password, and it must not contain the first part of your email address.</li><li>Mix letters, numbers or symbols. A long passphrase of 16+ characters is fine on its own.</li></ul>
+  <h3>Protection you will notice</h3>
+  <div class="kv">
+    <div>Lockout</div><div>Five wrong passwords in 15 minutes lock the account for 15 minutes, even if you then type the right one. Ask an owner for a reset link if you cannot wait.</div>
+    <div>Idle timeout</div><div>You are signed out after 30 minutes without activity, and after 12 hours in any case.</div>
+    <div>Suspended workspace</div><div>If your workspace is suspended, everyone is signed out immediately.</div>
+    <div>Change password</div><div>Use <span class="ui">Change password</span> in the left menu, under your name.</div>
+  </div>
+  <div class="call warn"><b>No two-step verification yet. </b>Sign-in uses email and password only. Use a strong, unique password.</div>
+</section>
+
+<section class="chap" id="firstrun">
+  <h2><small>Start here</small>First sign-in and the setup guide</h2>
+  <p>A new workspace starts empty. The first time an owner signs in, CaliChat opens the <b>Setup guide</b>. It has seven steps, and each one turns green by itself when the work is really done, so you can stop and come back later. A progress card on the Dashboard and the <span class="ui">Setup guide</span> menu item take you back until everything is done or you press <span class="ui">Hide this guide</span>.</p>
+  <ol class="steps">
+    <li><b>Business profile.</b> Name, timezone and the hours your team is available.</li>
+    <li><b>Teach your AI agent.</b> Describe your business in a few sentences and press <span class="ui">Draft with AI</span>; it writes the briefing for you to edit. Or type your own.</li>
+    <li><b>Knowledge.</b> Add your policies and FAQs.</li>
+    <li><b>Connect your systems</b> (optional). Link your store, ERP or CRM so the AI can look up and manage orders. You can skip this and add it later.</li>
+    <li><b>Chat with your agent</b> in the Playground, in every language you serve.</li>
+    <li><b>Connect your channels:</b> WhatsApp, Messenger, Instagram. See <a href="#connect">One-click connect</a>.</li>
+    <li><b>Receive a real message.</b> Send one from your own phone and see it arrive in the Inbox.</li>
+  </ol>
+  <div class="call tip"><b>Who sees it. </b>Only owners see the guide. People you invite as agents go straight to the dashboard.</div>
+</section>
+
+<section class="chap" id="setup">
+  <h2><small>Set up (owners)</small>Setup checklist</h2>
+  <p>A new workspace shows a “Get live in 4 steps” card on the dashboard. This is the full path, in the order that works best.</p>
+  <ol class="steps">
+    <li><b><a href="#settings">Settings.</a></b> Set your timezone, team hours and (optionally) your own Gemini key.</li>
+    <li><b><a href="#agents">AI Agents.</a></b> Describe your business, tone and rules.</li>
+    <li><b><a href="#knowledge">Knowledge.</a></b> Add your policies and FAQs.</li>
+    <li><b><a href="#connectors">Connectors.</a></b> Connect your ERP, store or CRM so the AI can look up real data.</li>
+    <li><b><a href="#playground">Playground.</a></b> Chat as a customer and check every answer.</li>
+    <li><b><a href="#channels">Channels.</a></b> Link WhatsApp, Messenger or Instagram. Only now do real customers reach the AI.</li>
+  </ol>
+  <div class="call tip"><b>Tip. </b>Do the channel last. Everything before it can be tested safely in the Playground, with no customer involved.</div>
+</section>
+
+<section class="chap" id="settings">
+  <h2><small>Set up (owners)</small>Settings</h2>
+  <p>Open <span class="ui">Settings</span>. Changes apply to the whole workspace.</p>
+  <div class="kv">
+    <div>Business name</div><div>Shown to your team and used by the AI when it introduces the business (the agent can override it).</div>
+    <div>Timezone</div><div>Controls dashboards, the daily and monthly counters, message times and business hours. Set it correctly first.</div>
+    <div>Team hours</div><div>Pick the days and times your humans are available. The AI uses this to tell customers when someone can help, instead of promising an instant reply at midnight.</div>
+    <div>Your own Gemini key</div><div>Optional. Leave empty to use the platform key. A key you enter is stored encrypted and never shown again.</div>
+    <div>Memory engine</div><div>Built-in memory (default) or the TencentDB Agent Memory service, if your administrator set it up. If that service is down, CaliChat falls back to built-in memory automatically.</div>
+    <div>Remember preferences</div><div>Untick to stop the AI keeping any long-term notes about customers.</div>
+    <div>Limit reached message</div><div>What customers see when your monthly AI limit is used up. The chat is then handed to your team.</div>
+    <div>Auto-resume</div><div>Minutes of quiet after which a chat handed to a human returns to the AI. <code>0</code> means never.</div>
+    <div>Notifications</div><div>An https webhook (Slack, Teams, n8n and similar) and/or an e-mail address for handoffs and critical alerts.</div>
+    <div>Delete messages older than</div><div>Automatic clean-up in days (minimum 30). <code>0</code> keeps everything. See <a href="#privacy">Privacy and data</a>.</div>
+  </div>
+  <h3>Saved replies</h3>
+  <p>At the bottom of Settings, add a title and a message for answers you send often. Your team can insert them from the inbox.</p>
+</section>
+
+<section class="chap" id="agents">
+  <h2><small>Set up (owners)</small>AI Agents</h2>
+  <p>An agent is the persona that talks to customers. Most businesses need one. Open <span class="ui">AI Agents</span> then <span class="ui">New agent</span>.</p>
+  <div class="kv">
+    <div>Agent name</div><div>The first name customers see in the conversation, for example “Kavi”.</div>
+    <div>Business instructions</div><div>The most important field. Explain what you sell, prices currency, delivery areas, return rules, when to offer alternatives, and when to call a human. Write it like a briefing for a new staff member.</div>
+    <div>Tone</div><div>Friendly, professional, casual, formal or playful.</div>
+    <div>Languages</div><div>For example “English, Sinhala, Tamil”. The AI replies in the language the customer writes in.</div>
+    <div>Temperature</div><div>0 to 2. Leave at <code>1.0</code>, which is recommended for the current Gemini 3 models. Lower it only if answers vary too much.</div>
+    <div>Tools</div><div>Tick the tools this agent may use. Leave all unticked to allow every active tool. Fewer tools means faster and more accurate choices.</div>
+    <div>Fallback message</div><div>Sent if the AI service is unavailable after several retries. The chat is then handed to your team.</div>
+    <div>Active</div><div>Untick to pause the agent. If no agent is active, customers get no AI replies and you receive an alert.</div>
+  </div>
+  <div class="call tip"><b>Writing good instructions. </b>Be concrete: “Delivery is Rs. 350, free over Rs. 10,000. Colombo takes 1–2 days.” beats “We deliver quickly.” State rules as do and do not, and name the situations that must go to a human, such as refund disputes.</div>
+  <p>Each channel can use a different agent (see <a href="#channels">Channels</a>). Otherwise the first active agent answers.</p>
+</section>
+
+<section class="chap" id="knowledge">
+  <h2><small>Set up (owners)</small>Knowledge</h2>
+  <p>The knowledge base holds the answers that are the same for every customer: returns, shipping, payment methods, opening hours, sizing guides. The AI searches it by meaning, so a customer asking in Sinhala finds an answer you wrote in English.</p>
+  <ol class="steps">
+    <li>Open <span class="ui">Knowledge</span>, enter a <b>Title</b> and paste the <b>Content</b>, or upload a <code>.txt</code>, <code>.md</code> or <code>.csv</code> file.</li>
+    <li>Separate topics with a blank line. Short, single-topic paragraphs are found more reliably than long ones.</li>
+    <li>Press <span class="ui">Save &amp; index</span>. CaliChat splits the text into passages and builds a search index.</li>
+  </ol>
+  <p>The document list shows <b>semantic ✓</b> when meaning-based search is ready. If it says <b>keyword only</b>, press <span class="ui">Build semantic index</span> at the top of the page.</p>
+  <h3>Improve it over time</h3>
+  <p>The <b>Unanswered questions</b> panel lists what customers asked that nothing in the knowledge base matched, with a count. Add those topics and the list shrinks. The same list appears on the Monitoring page.</p>
+  <div class="call warn"><b>Do not store secrets here. </b>Knowledge text can be shown to customers. Put prices that change often in your ERP and read them with a tool instead.</div>
+</section>
+
+<section class="chap" id="connectors">
+  <h2><small>Set up (owners)</small>Connectors and tools</h2>
+  <p>A <b>connector</b> is a connection to one of your systems (a REST API). A <b>tool</b> is one question the AI is allowed to ask that system, such as “search products” or “get order status”. You decide exactly which questions are allowed and which fields come back.</p>
+
+  <h3>1. Create the connector</h3>
+  <ol class="steps">
+    <li>Open <span class="ui">Connectors</span> then <span class="ui">New connector</span>.</li>
+    <li>Enter a name and the <b>Base URL</b> of your API, for example <code>https://erp.example.com/api</code>.</li>
+    <li>Choose how it signs in: none, bearer token, API key in a header, basic, or a key in the URL. Enter the secret. It is stored encrypted and never displayed again.</li>
+    <li>Set the timeout (3 to 30 seconds) and save.</li>
+  </ol>
+  <div class="call note"><b>Try it with the demo. </b>Base URL <code>…/mock/erp</code> with bearer token <code>demo-erp-token</code> gives a sample fashion shop stored in the database: 24 products (two out of stock) and 12 orders for several customers. To see orders for your own phone, ask your administrator to run <code>php cli/seed_demo.php &lt;your number&gt;</code>, for example <code>php cli/seed_demo.php 94771234567</code> (country code, digits only).</div>
+
+  <h3>2. Add a tool</h3>
+  <p>Open the connector and choose <span class="ui">Add tool</span>.</p>
+  <div class="kv">
+    <div>Tool name</div><div>Letters, numbers and underscores, for example <code>get_order</code>.</div>
+    <div>Method and path</div><div>For example GET <code>/orders/{order_no}</code>. Words in braces become parameters.</div>
+    <div>When to use it</div><div>Plain-language instruction the AI reads. Be specific: “Look up the status and tracking of THIS customer's order by order number.”</div>
+    <div>Fields the AI may see</div><div>A comma list such as <code>order_no,status,eta,total,items,name,qty</code>. Everything else is hidden from the AI. This is required unless you tick “Expose all fields”, which is not recommended.</div>
+    <div>Response path</div><div>If the useful data sits inside the reply, enter its path, for example <code>data</code>.</div>
+    <div>Cache</div><div>Seconds to reuse a result for GET tools, useful for product lists. <code>0</code> turns caching off.</div>
+  </div>
+
+  <h3>3. Parameters</h3>
+  <p>Each parameter is one input the tool needs. Give every one a type and a <b>value source</b>:</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Source</th><th>Meaning</th><th>Use it for</th></tr></thead><tbody>
+    <tr><td><code>ai</code></td><td>The AI fills it in from the chat.</td><td>Search words, order numbers.</td></tr>
+    <tr><td><code>contact.phone</code></td><td>Forced from the customer's verified phone number. The AI cannot change it.</td><td>“Show only this customer's orders.”</td></tr>
+    <tr><td><code>contact.external_id</code> / <code>contact.name</code></td><td>Forced from the messaging account.</td><td>Account lookups.</td></tr>
+    <tr><td><code>static</code></td><td>A fixed value you type.</td><td>Store ID, API version.</td></tr>
+    </tbody></table></div>
+  <p>For parameters the AI fills in, add limits: an allowed <b>pattern</b> (for example <code>^ORD-[0-9]{3,8}$</code>), a list of <b>allowed values</b>, a maximum length, or a minimum and maximum for numbers. Values that break the rules are rejected before they reach your system. Values placed in the URL path may only contain letters, numbers, dots, dashes and underscores.</p>
+  <div class="call stop"><b>Protect customer data. </b>Any tool that returns personal or order data must have a parameter with source <code>contact.phone</code>. Without it, a customer could ask about someone else's order. Test this in the Playground with a different phone number.</div>
+
+  <h3>4. Test it</h3>
+  <p>Open the tool in the list, fill in the test values, enter a test customer phone and press <span class="ui">Run test</span>. You see the status, the time and the data the AI would receive. Tests run read-only: write tools cannot be run here.</p>
+
+  <h3>Tools that change data</h3>
+  <p>For POST, PUT, PATCH and DELETE tools you must tick <b>Allow this non-GET tool to change data</b>. The AI then must ask the customer to confirm the exact action, and only calls the tool after a clear “yes”. Each call also carries an idempotency key so a repeated request is not applied twice. Start with read-only tools and add write tools only when you need them.</p>
+</section>
+
+<section class="chap" id="actions">
+  <h2><small>Set up (owners)</small>AI actions and approvals</h2>
+  <p>Besides answering questions, the AI can <b>do things in your systems</b>: place an order, change a delivery address, cancel an order, record a sales enquiry (a lead), confirm a lead. It does this on its own, in the chat, once the customer has agreed. The demo store comes with these tools ready: <code>create_order</code>, <code>update_order</code>, <code>cancel_order</code>, <code>create_lead</code>, <code>confirm_lead</code> and <code>list_my_leads</code>.</p>
+  <h3>How a change happens</h3>
+  <div class="flow" aria-label="How an AI action is protected">
+    <div><b>1. Customer asks</b>“Please order 2 caps”</div><div class="arr">→</div>
+    <div><b>2. Preview</b>Nothing changes; the AI reads the details back</div><div class="arr">→</div>
+    <div><b>3. Customer says yes</b>A new message from them</div><div class="arr">→</div>
+    <div><b>4. Action runs</b>The AI reports the real result</div>
+  </div>
+  <p>These protections are enforced by CaliChat itself, not left to the AI's judgement:</p>
+  <ul>
+    <li><b>Preview first.</b> The first call to a write tool only records a preview. Nothing is created, changed or cancelled.</li>
+    <li><b>The customer must reply.</b> The real call is accepted only after the customer sends a new message following the preview, with exactly the same details. A changed detail needs a new preview.</li>
+    <li><b>Once only.</b> Each confirmation can be used one time, and repeated requests are not applied twice.</li>
+    <li><b>Limits.</b> At most 6 changes per chat per hour. Your own system keeps its rules too: stock checks, order value limits, “only while Processing”, and “an order belongs to one phone number”.</li>
+    <li><b>Their records only.</b> Tools use the verified phone number of the sender, so a customer can only change their own orders and leads.</li>
+    <li><b>No made-up results.</b> If the AI says something is done, or quotes an order or enquiry number, CaliChat checks that a tool really returned it. If not, the AI is told to redo it, and if it still cannot, the chat is handed to your team.</li>
+    <li><b>Everything is recorded</b> in the Audit log (<code>ai_action</code>) and listed on the Approvals page.</li>
+  </ul>
+  <h3>Choosing how autonomous each action is</h3>
+  <p>In <span class="ui">Connectors</span>, open a tool that changes data. Two settings decide what happens:</p>
+  <div class="kv">
+    <div>Allow this tool to change data</div><div>Must be ticked or the tool cannot run. Only owners can tick it.</div>
+    <div>Require team approval</div><div>Unticked (default): the AI acts by itself after the customer's “yes”. Ticked: the AI submits the request and tells the customer a team member will confirm. Use this for risky actions such as refunds or large orders.</div>
+  </div>
+  <h3>The Approvals page</h3>
+  <p>Requests waiting for a person appear under <span class="ui">Approvals</span> (the menu shows a count, and an alert is raised). <span class="ui">Approve</span> runs the action and messages the customer with the result. <span class="ui">Reject</span> tells them the request could not be completed and that a team member will follow up. The page also lists the changes the AI made by itself.</p>
+  <h3>Adding actions for your own system</h3>
+  <ol class="steps">
+    <li>Create a connector to your API (see <a href="#connectors">Connectors and tools</a>).</li>
+    <li>Add a tool with method POST, PATCH, PUT or DELETE and tick <b>Allow this tool to change data</b>.</li>
+    <li>Describe in plain words when to use it. Define the inputs; mark the customer's phone as <code>contact.phone</code>. Use patterns and limits on every input.</li>
+    <li>List the response fields the AI may see. Include your system's <code>message</code> field and the order or reference number, so the AI can report them.</li>
+    <li>Make your API enforce its own rules and return a clear <code>error</code> text when it refuses (for example “order already shipped”): the AI passes that reason to the customer.</li>
+  </ol>
+  <div class="call warn"><b>Test against a test copy. </b>The Playground can run write actions for real (a checkbox turns this off). The tool test panel under Connectors never runs write tools. Use a test copy of your system, or a test channel such as the Twilio Sandbox, when trying changes.</div>
+</section>
+
+<section class="chap" id="store">
+  <h2><small>Set up (owners)</small>Store, Orders and Leads</h2>
+  <p>No ERP or CRM? CaliChat has a small one built in. The AI agent reads and writes it exactly like an outside system, with the same safeguards from <a href="#actions">AI actions and approvals</a>.</p>
+  <h3>Store</h3>
+  <ol class="steps">
+    <li>Open <span class="ui">Store</span>. Press <b>Add sample products</b> to try it, or add your own products (SKU, name, price, stock, sizes, colours) or import a CSV. The first row of a CSV must name the columns: <code>sku,name,price,stock,category,variants,colors,description</code>. Existing SKUs are updated.</li>
+    <li>Add <b>delivery areas</b>: town, fee, free-over amount, delivery time, and whether cash on delivery is allowed. Towns you do not list use the standard fee.</li>
+    <li>Set the <b>store rules</b>: standard fee, free delivery threshold, the payment methods you accept, and the <b>largest order the AI may place</b>. Bigger orders must be placed by your team.</li>
+    <li>Press <b>Use this store with the AI</b>. The agent can now search products, quote delivery, place, change and cancel orders, and record leads here. Test it in the <a href="#playground">Playground</a> with <i>Run write actions</i> ticked.</li>
+  </ol>
+  <p>Your cost price is never shown to the AI or to customers. Stock is reserved when an order is placed and returned when it is cancelled.</p>
+  <h3>Orders</h3>
+  <p><span class="ui">Orders</span> lists every order, whether the AI or your team placed it. Open one to move it along (Processing, Packed, Shipped, Delivered), add the courier and tracking number, mark it paid, change the delivery details while it is still Processing, or cancel it. Cash-on-delivery orders become Paid when delivered. Use <b>Create an order</b> for phone, shop or social media orders.</p>
+  <h3>Leads</h3>
+  <p><span class="ui">Leads</span> is a board with five stages: New, Contacted, Qualified, Won, Lost. Enquiries recorded by the AI appear in New with a <i>customer confirmed</i> badge once the customer confirmed. Change a lead's stage from the dropdown on its card, or open it to assign an owner, set an expected value and add notes. Staff can work orders and leads; only owners change the catalogue, templates and follow-ups.</p>
+</section>
+
+<section class="chap" id="templates">
+  <h2><small>Set up (owners)</small>WhatsApp templates</h2>
+  <p>WhatsApp lets a business message a customer first, or write after 24 hours of silence, only with a <b>template that Meta has approved</b>. <span class="ui">WA Templates</span> helps you write them correctly.</p>
+  <ol class="steps">
+    <li>Under <b>Business account</b>, enter the WhatsApp Business Account ID of your number (Meta Business Settings, WhatsApp accounts). Numbers connected with one-click connect already have it. Twilio sandbox numbers cannot use these templates.</li>
+    <li>Press <b>Add starter templates</b> (order confirmed, shipped, delivered, payment reminder, review request, still interested) or choose <b>New template</b>.</li>
+    <li>Write the message with readable placeholders such as <code>{name}</code>, <code>{order_no}</code>, <code>{courier}</code>, <code>{tracking}</code>. The preview shows sample values and which <code>{{1}}</code>, <code>{{2}}</code> Meta will receive.</li>
+    <li>Read the checks under the preview. Errors block submission (for example a message that starts or ends with a placeholder, or has more than three buttons). Warnings are advice (for example a marketing template without “Reply STOP to unsubscribe”).</li>
+    <li>Press <b>Submit to Meta</b>. Approval takes minutes to a day. Press <b>Check approval status</b>, or wait: the background worker checks every 5 minutes and alerts you if a template is rejected, with Meta's reason.</li>
+  </ol>
+  <p>Meta does not allow editing a template after submission. To change one, save a new version under a new name. <b>Utility</b> templates are for order and account updates; <b>Marketing</b> templates (offers, review requests, nudges) cost more and need the customer's opt-in. Campaigns can use any approved template and fill <code>{name}</code> and <code>{shop}</code>.</p>
+</section>
+
+<section class="chap" id="followups">
+  <h2><small>Set up (owners)</small>Follow-ups</h2>
+  <p><span class="ui">Follow-ups</span> sends messages automatically so you do not have to remember. Press <b>Add recommended set</b> to create the usual ones, then adjust or switch them off.</p>
+  <div class="kv">
+    <div>Order placed / packed / shipped / delivered / cancelled</div><div>Sent when you change the order's status. Shipped messages can include the courier, tracking number and delivery estimate. The recommended “order placed” message goes only to orders your team placed, because the customer already confirmed AI orders in the chat.</div>
+    <div>Payment still pending</div><div>For bank transfer or card orders that are still unpaid after the delay (default 6 hours).</div>
+    <div>Ask for a review</div><div>One day after delivery. This is promotional, so only customers marked Opted in receive it.</div>
+    <div>Chat went quiet</div><div>The customer looked at products, the AI replied, then nothing for 2 hours. One gentle nudge, never after they write again, never when a person has taken over. Promotional: needs Opted in.</div>
+    <div>Lead not followed up</div><div>Alerts your team about a New lead nobody has moved forward after 4 hours.</div>
+  </div>
+  <h3>Rules that always apply</h3>
+  <ul>
+    <li><b>24-hour window.</b> Free text is sent only within 24 hours of the customer's last message. After that, the follow-up needs an approved template attached; otherwise it is skipped and the log says why.</li>
+    <li><b>Consent.</b> Promotional follow-ups need Opted in (Contacts). A customer who sent STOP still gets order updates but no promotions.</li>
+    <li><b>Quiet hours.</b> Nothing is sent between 21:00 and 08:00 by default (change it on the page). Held messages go out when quiet hours end.</li>
+    <li><b>Checked again at sending time.</b> A shipped message is dropped if the order was cancelled meanwhile; a nudge is dropped if the customer wrote again.</li>
+    <li><b>Never twice.</b> Each follow-up is sent once per order, chat or lead.</li>
+  </ul>
+  <p>The table <b>What happened</b> lists the latest follow-ups with the result (sent, skipped, failed, waiting) and the reason. Follow-ups are sent by the background worker. If it is not running, press <b>Check now</b>.</p>
+</section>
+
+<section class="chap" id="ordertaking">
+  <h2><small>Set up (owners)</small>How the AI takes orders</h2>
+  <p>Customers do not fill in forms. They write naturally, for example: <i>“2 black baseball caps and 1 medium navy polo shirt to 45 Temple Road, Kandy, I'm Nimal, cash on delivery”</i>, in English, Sinhala, Tamil or Singlish. The AI pulls out every detail itself.</p>
+  <ol class="steps">
+    <li><b>It reads what is already there:</b> products, quantity, size, colour, name, address, town and payment. It never asks again for what was said, and never asks for the phone number (it already knows it).</li>
+    <li><b>It checks against your Store</b> with a dry run (<code>check_order</code>): real prices, delivery fee and total, products that need a size or colour, out-of-stock items, a payment method that is not allowed in that town, orders above your limit. It asks <b>once</b> for everything still missing.</li>
+    <li><b>It shows one summary</b> and waits for the customer's “yes”. Only then is the order placed, by your own rules (see <a href="#actions">AI actions and approvals</a>).</li>
+    <li><b>It remembers the customer.</b> Name, address, town and usual payment are saved. Next time the AI offers them in the same summary (“Deliver to your usual address at … in Kandy?”) instead of asking again. This memory is per business and per phone number.</li>
+    <li><b>Changing an order:</b> the AI looks at the current order, sends the complete new list, shows the new total, and changes it after the customer agrees. Orders that already shipped cannot be changed by the AI.</li>
+  </ol>
+  <p>A <b>WhatsApp location pin</b> works as the delivery address. If a product has several colours, the AI asks for the colour (you can switch this off under <span class="ui">Store</span> > Store rules). Orders above the limit you set are handed to your team. Check how well it does with your own wording in <a href="#qualtests">Quality tests</a>.</p>
+</section>
+
+<section class="chap" id="payments">
+  <h2><small>Daily work</small>Payments, slips and invoices</h2>
+  <p>For bank-transfer and card orders the customer often sends a photo of the slip. CaliChat reads it so your team can confirm payments faster, but <b>a person always confirms the money</b>.</p>
+  <ul>
+    <li><b>Slip received:</b> when a customer who owes a bank transfer sends an image that is a payment slip, CaliChat reads the amount, reference and bank, attaches it to the matching order, and moves the order to <i>Payments to verify</i>. You get an alert. If the amount differs from the order total, it says so, and the AI tells the customer the slip was received and will be checked, not that the payment is confirmed.</li>
+    <li><b>Verify:</b> open <span class="ui">Orders</span> > <i>Payments to verify</i>, look at the slip, compare with your bank statement, and press <i>Payment received</i> (the order becomes Paid and the customer is thanked) or <i>Reject</i> (the customer is asked for another slip).</li>
+    <li><b>Invoices:</b> every order has a printable invoice page on a secure link. On the order, press <i>Open</i> or <i>Send link to customer</i> (works within WhatsApp's 24-hour window). Customers can also ask the AI for their invoice. Put your address, phone and bank account under <span class="ui">Store</span> > <i>Shown on invoices</i>.</li>
+  </ul>
+</section>
+
+<section class="chap" id="appts">
+  <h2><small>Daily work</small>Appointments</h2>
+  <ol class="steps">
+    <li>Open <span class="ui">Appointments</span> and add your <b>services</b> (name, length in minutes, price, how many can be booked at the same time).</li>
+    <li>Free times follow your opening days and hours (Setup guide or Settings), with one hour of notice, up to 30 days ahead. Nobody can book the same time twice.</li>
+    <li>Press <b>Connect the store</b> again if needed: when you have services, the AI gets tools to list services, offer free times, book and cancel. It offers two or three real free times, reads the date and time back in words, and books after the customer says yes.</li>
+    <li>Turn on <b>Appointment confirmation</b> and <b>Appointment reminder</b> in <a href="#followups">Follow-ups</a>. The reminder goes a set number of minutes before the start (default 3 hours) and is dropped if the booking was cancelled.</li>
+    <li>On the day, mark visits <i>Done</i> or <i>No-show</i>. Team members need the “Book, complete and cancel appointments” permission.</li>
+  </ol>
+</section>
+
+<section class="chap" id="richmsg">
+  <h2><small>Set up (owners)</small>Buttons, photos and voice</h2>
+  <p>Under <span class="ui">Settings</span> > <i>How the assistant replies on WhatsApp</i>:</p>
+  <div class="kv">
+    <div>Tap buttons and lists</div><div>Order summaries come with <b>Yes</b> and <b>No</b> buttons (in English, Sinhala or Tamil to match the customer). Product searches come as a pick-one list. A tap arrives as an ordinary message. Meta WhatsApp numbers only; Twilio, Messenger and Instagram get plain text.</div>
+    <div>Answer voice notes with a voice note</div><div>When a customer sends a voice note, short answers are spoken back (English, Sinhala, Tamil). Longer answers, answers with links, and anything that fails are sent as text. Needs ffmpeg on the server. It is off until you switch it on: listen to a few answers in your language first, and remember it uses extra AI tokens.</div>
+    <div>Product photos</div><div>Add an https image link to a product. When a customer asks to see it, the AI sends the photo on WhatsApp with the name and price.</div>
+  </div>
+</section>
+
+<section class="chap" id="adsleads">
+  <h2><small>Set up (owners)</small>Ads, lead forms and catalogue import</h2>
+  <ul>
+    <li><b>Click-to-WhatsApp ads:</b> when someone starts a chat from your ad, CaliChat remembers which ad. <span class="ui">Reports</span> shows how many chats each ad brought.</li>
+    <li><b>Facebook / Instagram lead forms:</b> form answers become <i>Leads</i> automatically (name, phone, email, answers). Turn on <b>New ad lead welcome</b> in <a href="#followups">Follow-ups</a> to message them; because they have never chatted with you, this needs an approved WhatsApp template, and filling the form counts as their consent. Your platform administrator must enable the <code>leadgen</code> webhook field in the Meta app.</li>
+    <li><b>Import products from WooCommerce or Shopify:</b> <span class="ui">Store</span> > <i>Import from WooCommerce or Shopify</i>. It only reads from the other shop (names, prices, stock, sizes, colours, photos) and never writes back. Keys are stored encrypted and never shown again. Products without a stock count arrive with 100 in stock: set real numbers afterwards. Tick “Refresh every 6 hours” to keep it current.</li>
+    <li><b>SMS fallback:</b> in <span class="ui">Follow-ups</span> enter your SMS provider's web address and body (Dialog, Mobitel, Text.lk, Notify.lk and similar offer an HTTP API), send a test, then tick “Send by SMS when WhatsApp cannot reach the customer” on the follow-ups that should use it. Promotional follow-ups still need the customer's opt-in.</li>
+  </ul>
+</section>
+
+<section class="chap" id="access">
+  <h2><small>Oversight</small>Team access and labels</h2>
+  <p>On <span class="ui">Team</span>, under <i>Who can do what</i>, owners choose for each member what they may see and change. Pages a member may not open disappear from their menu. Examples: let a manager edit products (“Edit products, delivery areas, store rules”) without making them an owner; hide full phone numbers from a part-time agent; let someone see only chats assigned to them.</p>
+  <ul>
+    <li><b>Standard access</b> is the starting set: Inbox, orders, leads, appointments, contacts, reports and read-only access to setup pages. Editing setup (store, templates, follow-ups, campaigns, knowledge) is off until an owner turns it on.</li>
+    <li><b>See every chat</b> off: the member sees chats assigned to them plus unassigned ones, so they can pick up new work.</li>
+    <li><b>See full phone numbers</b> off: numbers show as <code>94771****67</code> in the Inbox, orders, leads, contacts, appointments and downloads.</li>
+    <li><b>Inbox labels, pins and unread:</b> in a chat you can add labels (owners create them), <i>Pin</i> up to 5 chats to the top, and <i>Mark unread</i>. The Inbox tabs include <i>Unread</i> and <i>Pinned</i>, and you can filter by label.</li>
+  </ul>
+</section>
+
+<section class="chap" id="bizreports">
+  <h2><small>Oversight</small>Reports</h2>
+  <p><span class="ui">Reports</span> shows the last 7, 30 or 90 days: revenue and orders (split into what the AI placed and what your team placed), how many chats ended in an order, the typical first reply time, how many chats the AI handled without a person, how conversations ended (counted from what the AI really did), where customers came from (direct, click-to-WhatsApp ads, best ads), best-selling products, the leads funnel and win rate, results per team member, appointments, and how each follow-up performed. Press <i>Orders</i>, <i>Leads</i> or <i>Conversations</i> under Download for a spreadsheet file. Cancelled orders never count as revenue.</p>
+</section>
+
+<section class="chap" id="qualtests">
+  <h2><small>Oversight</small>Quality tests</h2>
+  <p>Before you trust a change to your agent (new instructions, new tools, a new AI model), try it on conversations you care about. <span class="ui">Quality tests</span> runs them with the real AI, using a made-up customer, so no real order or message is ever created. It costs AI tokens.</p>
+  <ol class="steps">
+    <li>Press <b>Add starter tests</b>: six ready-made checks (price question, no “order placed” without a yes, refund goes to a person, prompt injection ignored, unrelated requests declined, Sinhala answered in Sinhala).</li>
+    <li>Write your own: one <code>CUSTOMER:</code> line per message, then <code>EXPECT</code> lines under it: <code>tools</code> and <code>not_tools</code> (which tools it must or must not use), <code>reply_has</code> and <code>reply_lacks</code> (words), <code>handoff</code> (yes or no), <code>language</code> (sinhala, tamil, english), <code>max_chars</code>.</li>
+    <li>Press <b>Run</b> on one test or <b>Run all</b>. Each failed check is listed with the reason, and the last runs are kept so you can compare before and after a change.</li>
+  </ol>
+  <p>Developers can run the same tests from the command line (<code>php cli/agent_tests.php &lt;tenant id&gt;</code>); it exits with an error code when a test fails.</p>
+</section>
+
+<section class="chap" id="billing">
+  <h2><small>Platform and owners</small>Sign-up, plans and billing</h2>
+  <ul>
+    <li><b>Sign-up:</b> new businesses open <span class="mono">/signup</span>, choose a plan and get a <b>14-day free trial</b> with their own workspace. No card is taken. The platform administrator can close sign-up.</li>
+    <li><b>Plans:</b> each plan sets the monthly AI replies, AI usage and team size. Owners see their usage under <span class="ui">Plan &amp; billing</span>.</li>
+    <li><b>Paying:</b> create an invoice for the plan and number of months, pay by bank transfer using the details shown, then press <i>I have paid</i> with the bank reference. The platform administrator checks the bank and confirms; the plan and the paid period start then.</li>
+    <li><b>Renewals:</b> a renewal invoice appears a week before the period ends. If the trial or period ends unpaid there are 3 days of grace; after that the AI stops answering new chats (customers get your holding message and your team is alerted) until the invoice is paid.</li>
+    <li><b>Platform administrators:</b> <span class="ui">Billing</span> lists payments waiting for confirmation, open invoices, every business's status, plan prices and limits, bank details, and lets you issue an invoice, restart a trial, cancel, or mark a business complimentary.</li>
+  </ul>
+</section>
+
+<section class="chap" id="channels">
+  <h2><small>Set up (owners)</small>Channels (WhatsApp, Messenger, Instagram)</h2>
+  <p>A channel links one Meta business account to CaliChat. You need a Meta developer app with the product enabled, and a public <b>https</b> address for CaliChat, because Meta must be able to reach it.</p>
+  <h3>Add the channel in CaliChat</h3>
+  <ol class="steps">
+    <li>Open <span class="ui">Channels</span> and choose the type.</li>
+    <li>Enter a name and the ID: the <b>Phone number ID</b> (WhatsApp), the <b>Page ID</b> (Messenger) or the <b>Instagram account ID</b>.</li>
+    <li>Paste the permanent <b>access token</b> and the Meta <b>app secret</b>. The secret is used to prove that messages really come from Meta; without it every message is rejected.</li>
+    <li>Optionally pick which agent answers on this channel, then press <span class="ui">Create channel</span>.</li>
+  </ol>
+  <h3>Connect Meta to CaliChat</h3>
+  <ol class="steps">
+    <li>On the new channel card, copy the <b>Callback URL</b> and the <b>Verify token</b>.</li>
+    <li>In the Meta developer dashboard, open the webhook settings of your product, paste both values, and confirm.</li>
+    <li>Subscribe to the <b>messages</b> field.</li>
+    <li>Back in CaliChat press <span class="ui">Verify connection</span>. It should say “Connected as …”.</li>
+    <li>Send a test message from a phone. The checklist on the card turns green when the first message arrives.</li>
+  </ol>
+  <div class="kv">
+    <div>Credentials saved</div><div>ID, token and app secret are all present.</div>
+    <div>Connection verified</div><div>Meta accepted the token and ID.</div>
+    <div>Webhook receiving</div><div>At least one message has arrived. “Last message” shows when.</div>
+    <div>Pause / Resume</div><div>Stops AI processing for that channel without deleting anything.</div>
+    <div>Remove</div><div>Deletes the channel. Conversation history is kept.</div>
+  </div>
+  <div class="call warn"><b>Access tokens expire. </b>If replies stop being delivered, the channel card shows a send error and you receive a “channel token” alert. Create a new permanent token in Meta and paste it under <span class="ui">Edit credentials</span>.</div>
+  <div class="call note"><b>Two numbers, same type. </b>You can connect several WhatsApp numbers. Customers are tracked per number, so a reply always leaves from the number the customer wrote to.</div>
+</section>
+
+<section class="chap" id="connect">
+  <h2><small>Set up (owners)</small>One-click connect: Facebook, Instagram and WhatsApp</h2>
+  <p>Most businesses should not copy tokens by hand. When your platform administrator has switched on one-click connect, the top of the <span class="ui">Channels</span> page shows two buttons. You sign in to Facebook, choose what to share, and CaliChat sets up the webhooks for you.</p>
+
+  <h3>Messenger and Instagram</h3>
+  <ol class="steps">
+    <li>Press <span class="ui">Connect Facebook Page &amp; Instagram</span> and sign in to Facebook with an account that is an <b>admin of your Page</b>.</li>
+    <li>In the Facebook pop-up, select your Page and its linked Instagram account and accept the permissions to manage and read messages.</li>
+    <li>Back in CaliChat, tick what to connect (Messenger on the Page, Instagram account) and press <span class="ui">Connect selected</span>.</li>
+    <li>Send a test message to your Page or Instagram account from another profile. It appears in the Inbox.</li>
+  </ol>
+  <div class="call note"><b>Instagram checklist. </b>The Instagram account must be a <b>professional</b> (business or creator) account, linked to your Facebook Page, and in the Instagram app under <i>Settings → Messages and story replies → Message controls</i> “Allow access to messages” must be on.</div>
+
+  <h3>WhatsApp</h3>
+  <ol class="steps">
+    <li>Press <span class="ui">Connect WhatsApp number</span>. A Facebook pop-up (Meta's Embedded Signup) opens.</li>
+    <li>Sign in, then create or choose your <b>WhatsApp Business Account</b>, enter the business details and add or pick the phone number. Verify it with the code Meta sends by SMS or call.</li>
+    <li>Finish the pop-up. CaliChat registers the number, subscribes to its messages and creates the channel.</li>
+  </ol>
+  <div class="call warn"><b>Number rules. </b>The number can receive a verification SMS or call, and if it is already used in the regular WhatsApp or WhatsApp Business app, Meta will guide you through moving it. A number cannot be connected in two workspaces; CaliChat refuses a second attempt.</div>
+
+  <h3>What happens behind the scenes</h3>
+  <ul>
+    <li>CaliChat stores the access tokens encrypted and never shows them again.</li>
+    <li>All messages arrive on one signed Meta webhook and are routed to your workspace by Page, Instagram account or phone number.</li>
+    <li>Press <span class="ui">Verify connection</span> on a channel card at any time. If a token is withdrawn (for example when you remove the app in Facebook settings), you get a “channel token” alert; just press Connect again.</li>
+  </ul>
+
+  <h3>For platform administrators: turning it on</h3>
+  <ol class="steps">
+    <li>In Meta for Developers, create <b>one app</b> for the platform (type Business). Add <b>Facebook Login for Business</b>, <b>Messenger</b>, <b>Instagram</b> and <b>WhatsApp</b> products.</li>
+    <li>Open <span class="ui">Platform → Settings</span> in CaliChat, enter the <b>App ID</b> and <b>App secret</b> (and, for WhatsApp, the <b>Embedded Signup configuration ID</b>). Save.</li>
+    <li>Copy three values from that page into the Meta app: the <b>webhook callback URL</b> with its <b>verify token</b> (subscribe the WhatsApp Business Account, Page and Instagram objects to <code>messages</code>), and the <b>Valid OAuth Redirect URI</b>.</li>
+    <li>Your domain must be public https, with a privacy policy URL on the app.</li>
+  </ol>
+  <div class="call stop"><b>Meta review is required before customers can use it. </b>Until your app passes <b>business verification</b> and <b>App Review</b> (advanced access to the messaging permissions; <b>Tech Provider</b> status for WhatsApp Embedded Signup), one-click connect works only for people who have a role on the Meta app, such as you and your testers. That is a Meta rule that no software can skip; plan for it, and use the manual or Twilio route for pilots in the meantime.</div>
+  <p><b>Prefer to bring your own Meta app?</b> A tenant can still connect manually (Phone number ID, Page ID, access token and app secret) using the form lower on the Channels page. Those channels keep their own webhook address.</p>
+</section>
+
+<section class="chap" id="twilio">
+  <h2><small>Set up (owners)</small>Testing with the Twilio WhatsApp Sandbox</h2>
+  <p>A free Twilio trial lets you chat with CaliChat from your own WhatsApp within minutes, without waiting for a Meta business approval. Twilio calls CaliChat whenever you message its sandbox number, and CaliChat answers through Twilio.</p>
+  <div class="call note"><b>What you need. </b>A Twilio account (free trial), WhatsApp on your phone, a Gemini key in CaliChat, and a public https address for your computer. Twilio cannot reach <code>localhost</code>, so a tunnel such as <b>ngrok</b> is used while testing.</div>
+
+  <h3>Part 1: Twilio</h3>
+  <ol class="steps">
+    <li>Sign up for a Twilio trial and verify your phone number. On the Console home page, note the <b>Account SID</b> (starts with <code>AC</code>) and reveal the <b>Auth Token</b>.</li>
+    <li>Open <b>Messaging → Try it out → Send a WhatsApp message</b>. Note the <b>sandbox number</b> (for example +1 415 523 8886) and your personal <b>join code</b>, a phrase like <code>join sunny-tiger</code>.</li>
+    <li>On your phone, open WhatsApp and send that exact join message to the sandbox number. Twilio replies that you are connected. Only phones that joined can talk to the sandbox, and you may need to join again after a few days.</li>
+  </ol>
+
+  <h3>Part 2: make CaliChat reachable</h3>
+  <ol class="steps">
+    <li>Install ngrok and run <code>ngrok http 80</code> on the computer that runs CaliChat. Copy the <code>https://…ngrok…</code> address it shows.</li>
+    <li>Open CaliChat <b>through that address</b>, for example <code>https://abcd-12-34.ngrok-free.app/calichat</code>, and sign in. Opening it this way makes CaliChat show the correct public callback URL. Optionally set <code>APP_URL</code> to the same address in <code>.env</code>.</li>
+  </ol>
+
+  <h3>Part 3: connect them</h3>
+  <ol class="steps">
+    <li>In CaliChat open <span class="ui">Channels</span>, set Type to <b>WhatsApp via Twilio</b>, and fill in a name, the <b>sandbox number</b>, the <b>Account SID</b> and the <b>Auth Token</b>. Press <span class="ui">Create channel</span>.</li>
+    <li>Copy the <b>Callback URL</b> on the new channel card.</li>
+    <li>In Twilio, open the <b>Sandbox settings</b> and paste it into <b>When a message comes in</b>. Set the method to <b>POST</b> and save.</li>
+    <li>Back in CaliChat press <span class="ui">Verify connection</span>. It should say “Connected as … (Trial, active)”.</li>
+  </ol>
+
+  <h3>Part 4: give it something to talk about</h3>
+  <ol class="steps">
+    <li>Ask your administrator to run <code>php cli/seed_demo.php 94771234567 "Your Name"</code> with <b>your own WhatsApp number</b> (country code, digits only). This creates three sample orders for you: shipped, delivered and processing.</li>
+    <li>Make sure the worker is running (<code>start-worker.bat</code>).</li>
+    <li>Send messages from your phone to the sandbox number and watch them appear in the <span class="ui">Inbox</span>.</li>
+  </ol>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Try sending</th><th>What it checks</th></tr></thead><tbody>
+    <tr><td>Hi, what do you sell?</td><td>Greeting, knowledge and product search</td></tr>
+    <tr><td>Do you have jeans in stock?</td><td>Product search; one jeans model is out of stock</td></tr>
+    <tr><td>ජීන්ස් තියෙනවද? or ஜீன்ஸ் இருக்கிறதா?</td><td>Sinhala and Tamil replies</td></tr>
+    <tr><td>Where are my orders?</td><td>Looks up only your phone number's orders</td></tr>
+    <tr><td>Where is order ORD-1002?</td><td>Not yours, so the AI must not reveal it</td></tr>
+    <tr><td>What is your return policy?</td><td>Knowledge base search</td></tr>
+    <tr><td>I want to talk to a person</td><td>Handoff to the Inbox with an alert</td></tr>
+    <tr><td>(send a voice note)</td><td>Voice message converted to text</td></tr>
+    </tbody></table></div>
+
+  <h3>Limits to know about</h3>
+  <ul>
+    <li><b>24-hour window:</b> you can reply freely for 24 hours after the customer's last message. Template messages are not supported on Twilio channels in CaliChat, so campaigns work only inside that window.</li>
+    <li><b>Sandbox is for testing.</b> A live number needs a Twilio WhatsApp sender approved by Meta. When you get one, create another “WhatsApp via Twilio” channel with that number, or connect it through Meta directly.</li>
+    <li><b>Free tunnel addresses change</b> each time ngrok restarts. Paste the new callback URL into Twilio again.</li>
+    <li><b>Security:</b> CaliChat checks Twilio's signature on every message and rejects anything else. Your Auth Token is stored encrypted.</li>
+  </ul>
+  <div class="call warn"><b>If nothing happens. </b>Check the Twilio Console debugger first. A <b>403</b> there means the signature did not match: the Auth Token is wrong, or the URL in Twilio differs from the one CaliChat shows. No reply but messages appear in the Inbox means the AI or the send failed; see Monitoring and the channel card for the reason.</div>
+</section>
+
+<section class="chap" id="playground">
+  <h2><small>Set up (owners)</small>Playground</h2>
+  <p>The Playground lets you talk to your agent as if you were a customer, with no channel needed. Under each reply you see which tools the AI used and how long each took.</p>
+  <ul>
+    <li>Set <b>Customer phone</b> to a number that exists in your system. Tools that use <code>contact.phone</code> will look up that customer.</li>
+    <li>Try normal questions, then try to break it: ask for another customer's order, ask for a discount, ask it to ignore its rules, write in Sinhala and Tamil, send a vague message.</li>
+    <li><span class="ui">Reset chat &amp; memory</span> starts over and clears what the AI remembered about the test customer.</li>
+  </ul>
+  <div class="call note"><b>Safe by design. </b>Test chats never count toward your monthly limits or your dashboards. Write actions (create, update, cancel) run for real in your connected systems while “Run write actions” is ticked; untick it to keep the Playground read-only. Every Playground message is recorded in the audit log.</div>
+  <p>If you say you want a human, the chat is handed off and the AI stops answering. Press Reset to continue testing.</p>
+</section>
+
+<section class="chap" id="inbox">
+  <h2><small>Daily work</small>Inbox</h2>
+  <p>The inbox shows every conversation from every channel in one place. The AI answers by itself; you look in to supervise, help with difficult cases and answer handoffs.</p>
+  <h3>Finding conversations</h3>
+  <div class="kv">
+    <div>Tabs</div><div><b>All</b>, <b>Needs human</b> (waiting for your team), <b>AI</b> (the AI is handling it), <b>Closed</b>.</div>
+    <div>Search</div><div>By name, phone number or any word in the messages.</div>
+    <div>Mine</div><div>Only conversations assigned to you.</div>
+    <div>Waiting badge</div><div>For chats waiting on a human: green under 5 minutes, amber under 15, red after that.</div>
+    <div>Show more</div><div>Loads older conversations at the bottom of the list.</div>
+  </div>
+  <h3>Reading a conversation</h3>
+  <p>Purple bubbles are AI replies, dark bubbles are your team, white bubbles are the customer. The small “⚙” labels show which tools the AI used. Voice messages and images appear as text, for example “[Voice message] …”. If the chat is long, a short summary of the earlier part appears at the top, and <span class="ui">Load earlier messages</span> shows the rest.</p>
+  <h3>Taking over</h3>
+  <ol class="steps">
+    <li>Open the conversation and press <span class="ui">Take over</span>, or simply send a message. The AI stops answering this customer.</li>
+    <li>Write your reply and press <span class="ui">Send</span>.</li>
+    <li>When you are done, press <span class="ui">Resume AI</span> to give the chat back, or <span class="ui">Close</span> to finish it. Closed chats start a fresh conversation if the customer writes again.</li>
+  </ol>
+  <div class="call tip"><b>Handoffs happen automatically </b>when the customer asks for a person, is upset, disputes a refund, or the AI cannot solve the request. You get an alert, and the reason is shown on the conversation.</div>
+  <h3>Working as a team</h3>
+  <ul>
+    <li><b>Assign to me / Unassign</b> shows who owns a chat. Replying assigns it to you if nobody has it.</li>
+    <li><b>Internal note:</b> change <span class="ui">Reply to customer</span> to <span class="ui">Internal note</span> before sending. Notes are yellow, visible only to your team and never sent to the customer.</li>
+    <li><b>Saved replies:</b> choose one from the dropdown to fill the message box, then edit and send.</li>
+    <li><b>Desktop alerts:</b> press “Turn on desktop alerts” under the inbox to hear a sound and see a notification for new messages and handoffs, even when the tab is in the background.</li>
+  </ul>
+  <div class="call warn"><b>“Not delivered” under a message. </b>WhatsApp only allows free-form replies within 24 hours of the customer's last message. After that the send is refused, and you will see the reason in small print. Ask the customer to write first, or use an approved template in a campaign.</div>
+</section>
+
+<section class="chap" id="contacts">
+  <h2><small>Daily work</small>Contacts and consent</h2>
+  <p>Everyone who has messaged you appears under <span class="ui">Contacts</span>, per channel, with their number of chats and AI memories.</p>
+  <h3>Marketing consent</h3>
+  <p>CaliChat only sends campaign messages to people marked <b>Opted in</b>. Each contact has one of three states:</p>
+  <div class="kv">
+    <div>Not recorded</div><div>The default. Never receives campaigns.</div>
+    <div>Opted in</div><div>Set it only when the customer really agreed. Type how consent was given, for example “ticked box at checkout, 12 Mar”. This is kept as your record.</div>
+    <div>Opted out</div><div>Excluded from campaigns. Customers also opt out themselves by replying <code>STOP</code> (or the Sinhala and Tamil equivalents). Replying <code>START</code> opts them back in.</div>
+  </div>
+  <h3>Privacy actions (owners)</h3>
+  <ul>
+    <li><span class="ui">Export</span> downloads everything about one person (details, conversations, messages, AI memory) as a file, for a customer data request.</li>
+    <li><span class="ui">Forget AI memory</span> erases what the AI remembers, but keeps the conversations.</li>
+    <li><span class="ui">Delete</span> permanently removes the contact with all conversations, messages and memories. It cannot be undone.</li>
+  </ul>
+</section>
+
+<section class="chap" id="campaigns">
+  <h2><small>Daily work</small>Campaigns</h2>
+  <p>Send order updates, offers or reminders to customers who opted in.</p>
+  <ol class="steps">
+    <li>Open <span class="ui">Campaigns</span>. Enter a name and choose the <b>channel</b>. The list shows how many opted-in contacts that channel has.</li>
+    <li>For WhatsApp, enter the name of an <b>approved template</b> and its language. Write the message text; <code>{name}</code> is replaced with the customer's name.</li>
+    <li>Press <span class="ui">Save draft</span>, review, then <span class="ui">Launch</span>.</li>
+    <li>Watch the progress column (sent, failed). Campaigns send in small batches in the background, so large lists take a while.</li>
+  </ol>
+  <div class="call warn"><b>Meta's rules apply. </b>Outside the 24-hour window WhatsApp only accepts approved templates. Messenger and Instagram have similar limits. Use campaigns for people who expect to hear from you.</div>
+  <div class="call note"><b>Background sending needs the worker. </b>If a campaign stays on “running” and nothing is sent, ask your administrator to start the CaliChat worker.</div>
+</section>
+
+<section class="chap" id="monitoring">
+  <h2><small>Oversight</small>Usage and Monitoring</h2>
+  <p>This page answers three questions: how much are we using, how well is the AI doing, and is everything healthy. Choose 7, 14, 30 or 90 days at the top right. All times are in your workspace timezone.</p>
+  <h3>The status bar</h3>
+  <p>A green dot means normal. Amber means minor trouble (queue slower than a minute, or AI errors above 5%). Red means act now (a message waiting over five minutes, failed messages, or AI errors above 20%).</p>
+  <h3>Key figures</h3>
+  <div class="kv">
+    <div>AI replies</div><div>Answers the AI sent in the range, with customer messages received.</div>
+    <div>Tokens used</div><div>The AI's usage unit: text read plus text written. More tools and longer chats use more.</div>
+    <div>Estimated AI cost</div><div>An estimate from list prices set by your administrator, shown separately for Playground tests.</div>
+    <div>AI response time</div><div>Median time for one model call, and the 95th percentile (the slow end). A reply with tool lookups needs several calls.</div>
+    <div>Containment</div><div>Share of chats the AI handled without handing to a human. Higher is not always better; sensitive cases should reach people.</div>
+    <div>System calls</div><div>Lookups made in your ERP or other systems, and how many succeeded.</div>
+    <div>Handoffs</div><div>Chats passed to your team, and the average time until someone took them.</div>
+    <div>Voice &amp; images read</div><div>Voice notes and photos converted to text.</div>
+  </div>
+  <h3>Plan usage</h3>
+  <p>Three gauges show your month so far: <b>AI replies</b>, the <b>token budget</b>, and <b>AI calls this minute</b> against your per-minute limit. Green is fine, amber is above 70%, red above 90%. You get a warning at 80%. At 100% new chats are handed to your team with your “limit reached” message until the month resets or your administrator raises the limit.</p>
+  <h3>The detail tables</h3>
+  <ul>
+    <li><b>AI models:</b> calls, errors, average time and tokens per model and purpose (replies, memory, summaries, voice, search).</li>
+    <li><b>System calls by tool:</b> success rate, speed and cache hits for each tool. A tool with a low success rate needs attention in <a href="#connectors">Connectors</a>.</li>
+    <li><b>Channel health:</b> time of the last message from Meta, and any send error.</li>
+    <li><b>Stored data:</b> messages, contacts, memories and knowledge passages you currently hold.</li>
+    <li><b>Recent AI errors / tool errors:</b> the latest failures with their reasons.</li>
+    <li><b>Failed messages:</b> customer messages that could not be processed after several tries. Fix the cause (for example the AI key), then press <span class="ui">Retry</span> (owners).</li>
+    <li><b>Unanswered questions:</b> topics to add to <a href="#knowledge">Knowledge</a>.</li>
+  </ul>
+</section>
+
+<section class="chap" id="alerts">
+  <h2><small>Oversight</small>Alerts</h2>
+  <p>The bell in the top bar shows a red dot when there is something new. Open <span class="ui">Alerts</span> to read it. Opening the page marks items as seen; <span class="ui">Resolve</span> closes one. The same alerts can be sent to Slack, Teams or e-mail (see <a href="#settings">Settings</a>).</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Alert</th><th>Meaning</th><th>What to do</th></tr></thead><tbody>
+    <tr><td>Handoff</td><td>A customer needs a person.</td><td>Open the chat from the Inbox and take over.</td></tr>
+    <tr><td>Channel token</td><td>Meta rejected your access token.</td><td>Create a new token and update the channel.</td></tr>
+    <tr><td>Connector down</td><td>Your system failed several times. Calls pause for 60 seconds.</td><td>Check your ERP or API. The AI offers a human meanwhile.</td></tr>
+    <tr><td>Quota 80% / limit reached</td><td>You are near or at a monthly limit.</td><td>Ask your administrator to raise the plan.</td></tr>
+    <tr><td>Queue failed</td><td>A customer message could not be processed.</td><td>Monitoring → Failed messages → Retry.</td></tr>
+    <tr><td>AI errors</td><td>Many AI calls failed in 15 minutes.</td><td>Check the Gemini key and the AI errors table.</td></tr>
+    <tr><td>No agent</td><td>A customer wrote in but no agent is active.</td><td>Activate an agent.</td></tr>
+    <tr><td>Output guard</td><td>A reply that looked like it contained a password or key was blocked.</td><td>Review the chat and your tools' fields.</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="chap" id="team">
+  <h2><small>Oversight</small>Team and security</h2>
+  <h3>Adding people (owners)</h3>
+  <ol class="steps">
+    <li>Open <span class="ui">Team</span>, enter name, email and role, and press <span class="ui">Create invitation</span>.</li>
+    <li>Copy the one-time link shown on the page and send it to the person yourself. It is displayed only once and works once.</li>
+    <li>They open it, choose a password and sign in.</li>
+  </ol>
+  <p><b>Reset link</b> creates a 2-hour link for someone who forgot their password. <b>Disable</b> blocks an account immediately without deleting anything.</p>
+  <h3>Audit log (owners)</h3>
+  <p>Under <span class="ui">Audit log</span> you can see who did what: sign-ins, setting and tool changes, exports, deletions, Playground use, and any time a CaliChat platform administrator opened your workspace, with the reason they gave.</p>
+  <h3>How your data is protected</h3>
+  <ul>
+    <li>Passwords are stored as one-way hashes. Tokens, secrets and API keys are encrypted and never shown again.</li>
+    <li>Each workspace is isolated: no other business can see your conversations, contacts, tools or settings.</li>
+    <li>Messages from Meta are checked with a cryptographic signature; forged messages are rejected.</li>
+    <li>The AI only receives the fields you allow, and secret-looking fields and card numbers are always removed.</li>
+  </ul>
+</section>
+
+<section class="chap" id="privacy">
+  <h2><small>Oversight</small>Privacy and data</h2>
+  <div class="kv">
+    <div>What is stored</div><div>Customer messages, names and phone numbers, optional AI notes (preferences such as size or area), and technical logs of AI and system calls.</div>
+    <div>Who processes it</div><div>Message text, tool results you allow and short summaries are sent to Google's Gemini service to produce replies. Tell your customers in your privacy notice.</div>
+    <div>AI memory</div><div>Only things the customer said about themselves. Claims such as “I am a VIP” or “the owner promised a discount” are never saved or trusted.</div>
+    <div>Retention</div><div>Set automatic deletion in Settings (30 days or more). Technical logs are cleaned up automatically after 60 to 90 days.</div>
+    <div>Customer requests</div><div>Use Contacts → Export, Forget AI memory or Delete.</div>
+    <div>Turn memory off</div><div>Untick “Remember preferences” in Settings.</div>
+  </div>
+  <div class="call note"><b>Your responsibility. </b>You decide what customers are told and how long you keep their data. CaliChat provides the controls; check local data-protection rules, such as Sri Lanka's Personal Data Protection Act, for what applies to you.</div>
+</section>
+
+<section class="chap" id="admin">
+  <h2><small>Platform administrators</small>Platform console</h2>
+  <p>Platform administrators see a different menu: Dashboard, Tenants, Operations, Audit log and Platform. A <b>tenant</b> is one business workspace.</p>
+  <h3>Tenants</h3>
+  <ul>
+    <li><b>New tenant:</b> enter the business name, plan, limits, timezone and the owner's name and email. The owner receives a one-time link; nobody handles a password.</li>
+    <li><b>Limits:</b> AI replies per month, tokens per month, and AI calls per minute. Raising them takes effect at once.</li>
+    <li><b>Suspend / Activate:</b> a suspended tenant stops receiving AI replies and all its users are signed out immediately.</li>
+    <li><b>Owner reset link:</b> issues a 2-hour link for the tenant's first owner.</li>
+    <li><b>Delete tenant:</b> permanently removes all data. You must type the exact business name.</li>
+  </ul>
+  <h3>Opening a customer workspace</h3>
+  <p>Type a reason of at least 8 characters, for example “Investigating ticket 4821”, then press <span class="ui">Open workspace</span>. The reason is written to that tenant's audit log, and a banner shows “Viewing as tenant” until you press <span class="ui">Exit tenant view</span>.</p>
+  <h3>Operations</h3>
+  <div class="kv">
+    <div>Queue worker</div><div>Running, inline fallback, or stopped. Production should always show Running.</div>
+    <div>Message queue</div><div>Messages waiting, oldest wait in seconds, rate per minute, failures.</div>
+    <div>AI calls</div><div>Calls, error rate, median and p95 time over the last hour, and the platform-wide rate against its limit.</div>
+    <div>Circuit breakers</div><div>Automatic protection for Gemini, tenant systems and the memory service. An open breaker pauses calls for about a minute; you can reset it.</div>
+    <div>Tenant resource table</div><div>Per tenant: replies, tokens, estimated cost, errors, queue, stored messages, last customer message and open alerts. Amber rows are over 80% of a limit or have elevated errors.</div>
+    <div>Posture checklist</div><div>Checks against production settings: debug off, no private hosts, HTTPS, non-root database user, encryption key ids, worker running.</div>
+  </div>
+  <h3>Server tasks</h3>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Task</th><th>Command (from the CaliChat folder)</th></tr></thead><tbody>
+    <tr><td>Install or upgrade the database</td><td><code>php install.php</code></td></tr>
+    <tr><td>Run the queue worker</td><td><code>php cli/worker.php</code> or <code>start-worker.bat</code> on Windows</td></tr>
+    <tr><td>Rotate encryption keys</td><td>Add the new key to <code>APP_KEYS</code>, then <code>php cli/rotate_keys.php</code></td></tr>
+    <tr><td>Build semantic search vectors</td><td><code>php cli/reindex.php</code></td></tr>
+    <tr><td>List TencentDB memory tools</td><td><code>php cli/verify_tencent.php</code></td></tr>
+    <tr><td>Run the automated tests</td><td><code>php tests/run.php</code></td></tr>
+    <tr><td>Uptime check address</td><td><code>/health</code> (returns 503 if the database is down or the queue is behind)</td></tr>
+    </tbody></table></div>
+  <div class="call warn"><b>Before going public. </b>Set <code>APP_ENV=production</code>, serve over HTTPS, use a database user that is not root and has a password, and keep the worker running under a supervisor. Two-step verification is not available yet.</div>
+</section>
+
+<section class="chap" id="trouble">
+  <h2><small>Help</small>Troubleshooting</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead><tbody>
+    <tr><td>The AI does not answer a customer</td><td>The chat is in human mode, the channel is paused, no agent is active, a limit is reached, or the worker is stopped.</td><td>Check the badge on the chat (AI or Human), then Channels, AI Agents, the Plan usage gauges and Operations. Press <b>Resume AI</b> if a person had taken over.</td></tr>
+    <tr><td>No messages arrive from Meta</td><td>The webhook is not confirmed, “messages” is not subscribed, the address is not public https, or the app secret is missing.</td><td>On the channel card, follow the checklist. Check that “Last message” updates after you send a test.</td></tr>
+    <tr><td>“One-click connect is not switched on yet”</td><td>The platform's Meta app has not been set up.</td><td>Ask your administrator (Platform → Settings), or connect manually or with Twilio.</td></tr>
+    <tr><td>Facebook returns no Pages, or Instagram is missing</td><td>You are not an admin of the Page, you did not tick it in the Facebook pop-up, or Instagram is not a professional account linked to that Page.</td><td>Connect again and select the Page and Instagram account; check the Instagram checklist above.</td></tr>
+    <tr><td>“This account is already connected to another workspace”</td><td>The same Page, Instagram account or number is attached elsewhere.</td><td>Disconnect it in the other workspace first.</td></tr>
+    <tr><td>The AI said an order is “submitted for approval”</td><td>That tool requires team approval.</td><td>Open Approvals and approve or reject it.</td></tr>
+    <tr><td>The AI will not place or change an order</td><td>No customer reply after the preview, the system refused (stock, order limit, order already shipped), or the per-chat limit was reached.</td><td>Read the reason in the Audit log or the tool errors on the Monitoring page; the AI passes your system's reason to the customer.</td></tr>
+    <tr><td>Twilio: no reply on WhatsApp</td><td>You have not joined the sandbox, the callback URL in Twilio is outdated (tunnel address changed), the Auth Token is wrong, or you are outside the 24-hour window (Twilio error 63016).</td><td>Send the join message again, paste the current callback URL into Twilio, press Verify connection, and message the sandbox number first.</td></tr>
+    <tr><td>“Not delivered” under our reply</td><td>The 24-hour WhatsApp window has closed, or the access token expired.</td><td>Ask the customer to write first, or use a template. For token problems update the channel credentials.</td></tr>
+    <tr><td>The AI cannot find an order that exists</td><td>The order number format fails the parameter pattern, or the phone number differs from the one on the order.</td><td>Run the tool test with the same values. Check the pattern, and how phone numbers are stored in your system (with or without country code).</td></tr>
+    <tr><td>Tool says “no allowed response fields”</td><td>The tool lists no visible fields.</td><td>Enter the fields the AI may see, or tick “Expose all fields” if you are sure.</td></tr>
+    <tr><td>Tool says “temporarily unavailable”</td><td>Your system failed several times, so calls are paused for a minute.</td><td>Fix or restart your API. It resumes by itself.</td></tr>
+    <tr><td>Replies are slow</td><td>Each answer may need several AI calls and system lookups, and the AI service speed varies.</td><td>Reduce the tools an agent can use, enable caching on read tools, and check the response-time figures on the Monitoring page.</td></tr>
+    <tr><td>Customers are handed to humans too often</td><td>AI errors, a hit limit, or instructions that tell the AI to escalate.</td><td>Look at Recent AI errors and the handoff reasons. Loosen the instructions, and add knowledge for the questions it could not answer.</td></tr>
+    <tr><td>Wrong language in replies</td><td>Short or mixed-script messages.</td><td>State the supported languages in the agent, and add a line such as “Reply in Sinhala if the customer writes Sinhala or Singlish.”</td></tr>
+    <tr><td>A campaign does not send</td><td>No opted-in contacts, missing template name, or the worker is stopped.</td><td>Record consent in Contacts, check the template name and language, and ask the administrator to start the worker.</td></tr>
+    <tr><td>“Session expired. Please reload the page.”</td><td>You were idle too long, or signed out elsewhere.</td><td>Reload and sign in again.</td></tr>
+    <tr><td>I cannot sign in</td><td>Wrong password, five failed attempts, or a suspended workspace.</td><td>Wait 15 minutes, or ask an owner for a reset link. If everyone is locked out, contact your administrator.</td></tr>
+    </tbody></table></div>
+</section>
+
+<section class="chap" id="faq">
+  <h2><small>Help</small>FAQ</h2>
+  <details class="faq"><summary>Does the AI ever reply without my approval?</summary><p>Yes, that is its purpose. You control what it knows, which systems it can read, and when it must hand over. Supervise in the Inbox and the Monitoring page, and test changes in the Playground first.</p></details>
+  <details class="faq"><summary>Can customers see another customer's orders?</summary><p>Not if your order tool uses a <code>contact.phone</code> parameter. The lookup is forced to the verified sender, whatever the customer types. Always test with a different number.</p></details>
+  <details class="faq"><summary>What happens when the AI service is down?</summary><p>CaliChat retries, switches to a backup model, and after several attempts sends your fallback message and hands the chat to your team. You get an alert.</p></details>
+  <details class="faq"><summary>Can I stop the AI for one customer only?</summary><p>Yes. Open the chat and press Take over. Only that conversation is paused.</p></details>
+  <details class="faq"><summary>Does it understand voice notes and photos?</summary><p>It converts them to text first, then answers. Quality depends on audio clarity. Photos are described and any visible text is read. This is a newer feature, so check a few real examples.</p></details>
+  <details class="faq"><summary>How much does it cost to run?</summary><p>Your plan sets monthly limits. The Monitoring page shows an estimated cost from list prices your administrator entered. Treat it as a guide and check the real figures with your AI provider.</p></details>
+  <details class="faq"><summary>Is there a mobile app?</summary><p>No app, but the website works on phones, including the inbox.</p></details>
+  <details class="faq"><summary>Can I use my own Gemini key?</summary><p>Yes, in Settings. Your usage then bills to your own account. Leave it empty to use the platform key.</p></details>
+</section>
+
+<section class="chap" id="glossary" style="border-bottom:0">
+  <h2><small>Help</small>Glossary</h2>
+  <div class="kv">
+    <div>Agent (AI)</div><div>The persona and rules the AI follows when it talks to customers.</div>
+    <div>Channel</div><div>One connected WhatsApp number, Facebook Page or Instagram account.</div>
+    <div>Connector</div><div>A saved connection to one of your systems.</div>
+    <div>Tool</div><div>One allowed lookup or action on a connector.</div>
+    <div>Handoff</div><div>Passing a conversation from the AI to your team.</div>
+    <div>Containment</div><div>Share of chats finished by the AI alone.</div>
+    <div>Knowledge base</div><div>Your policies and FAQs that the AI can search.</div>
+    <div>Memory</div><div>Customer preferences the AI keeps between chats.</div>
+    <div>Token</div><div>A small piece of text. AI usage and limits are counted in tokens.</div>
+    <div>Webhook</div><div>The address Meta sends new messages to.</div>
+    <div>Queue / worker</div><div>Messages wait in a queue and a background worker answers them in order.</div>
+    <div>Tenant</div><div>One business workspace on the platform.</div>
+    <div>Opt-in / opt-out</div><div>Whether a customer agreed to receive marketing messages.</div>
+    <div>Template (WhatsApp)</div><div>A message pre-approved by Meta, needed to contact customers outside the 24-hour window.</div>
+  </div>
+</section>
+
+<div class="end">CaliChat User Manual · describes version 1. Voice and image understanding, Meta delivery and the TencentDB memory option depend on your live setup and should be checked after installation.</div>
+<div class="noresult" id="noresult" hidden>No section matches your search. Try a shorter word.</div>
+</main>
+</div>
+
+<script>
+(function(){
+  var secs=[].slice.call(document.querySelectorAll('section.chap'));
+  var links=[].slice.call(document.querySelectorAll('#toc a'));
+  var find=document.getElementById('find'), toc=document.getElementById('toc'), btn=document.getElementById('tocbtn');
+  btn.addEventListener('click',function(){var o=toc.classList.toggle('open');btn.setAttribute('aria-expanded',o);});
+  links.forEach(function(a){a.addEventListener('click',function(){toc.classList.remove('open');btn.setAttribute('aria-expanded','false');});});
+  // search: hide chapters that don't contain every typed word
+  find.addEventListener('input',function(){
+    var q=find.value.toLowerCase().split(/\s+/).filter(Boolean), shown=0;
+    secs.forEach(function(s){
+      var t=s.textContent.toLowerCase(), ok=q.every(function(w){return t.indexOf(w)>-1;});
+      s.hidden=!ok; if(ok) shown++;
+      var a=document.querySelector('#toc a[href="#'+s.id+'"]'); if(a) a.hidden=!ok;
+      if(ok&&q.length) s.querySelectorAll('details.faq').forEach(function(d){d.open=d.textContent.toLowerCase().indexOf(q[0])>-1;});
+    });
+    document.getElementById('noresult').hidden=shown>0;
+  });
+  // highlight current chapter in the contents
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id);});}});},{rootMargin:'-20% 0px -70% 0px'});
+    secs.forEach(function(s){io.observe(s);});
+  }
+})();
+</script>

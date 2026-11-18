@@ -1,0 +1,23 @@
+.env
+.env.*
+!.env.example
+/storage/logs/*
+/storage/worker.stop
+/vendor/
+*.log
+
+# runtime files created by the app (logos, generated pictures, cards, caches, uploads)
+/storage/*
+!/storage/.gitkeep
+
+# database backups hold real accounts, password hashes and encrypted secrets: never public
+/database/backup/
+*.sql.bak
+*.bak
+
+# machine and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+/.claude/

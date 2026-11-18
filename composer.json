@@ -1,0 +1,13 @@
+{
+  "name": "calichat/calichat",
+  "description": "Multi-tenant agentic messaging AI (WhatsApp, Messenger, Instagram) on PHP + MySQL + Gemini",
+  "type": "project",
+  "license": "proprietary",
+  "require": { "php": ">=8.0", "ext-curl": "*", "ext-mbstring": "*", "ext-openssl": "*", "ext-pdo": "*" },
+  "autoload": { "psr-4": { "CaliChat\\": "src/" } },
+  "scripts": {
+    "test": "php tests/run.php",
+    "migrate": "php install.php",
+    "worker": "php cli/worker.php"
+  }
+}

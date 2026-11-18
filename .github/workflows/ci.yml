@@ -1,0 +1,31 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env: { MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "1" }
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=5s --health-timeout=5s --health-retries=20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: "8.2", extensions: "curl, mbstring, openssl, pdo_mysql, gd" }
+      - name: Fonts for the product card images
+        run: sudo apt-get install -y --no-install-recommends fonts-dejavu-core
+      - name: Lint
+        run: find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l > /dev/null
+      - name: Create .env for tests
+        run: printf 'APP_KEY=%s\nDB_HOST=127.0.0.1\nDB_USER=root\nDB_PASS=\nGEMINI_DISABLED=1\n' "$(openssl rand -hex 32)" > .env
+      - name: Tests (unit + tenant isolation + security)
+        run: php tests/run.php
+      - name: Static analysis
+        run: |
+          composer require --dev phpstan/phpstan:^1.11 --no-interaction
+          vendor/bin/phpstan analyse -c phpstan.neon --no-progress
+        continue-on-error: true
+      - name: Dependency audit
+        run: composer audit || true

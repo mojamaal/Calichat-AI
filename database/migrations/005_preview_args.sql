@@ -1,0 +1,1 @@
+ALTER TABLE action_previews ADD COLUMN tool_name VARCHAR(64) NULL, ADD COLUMN args LONGTEXT NULL;

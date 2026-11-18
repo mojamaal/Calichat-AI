@@ -1,0 +1,77 @@
+CaliChat AI - Proprietary License (All Rights Reserved)
+
+Copyright (c) 2026 Mohammed Jamaal Rushdi. All Rights Reserved.
+
+This is NOT open-source software. The source code is published publicly only so
+that the Owner's work can be viewed and assessed (for example by recruiters,
+hiring managers and potential collaborators reviewing a portfolio). Publishing
+it does not grant anyone a licence to use it.
+
+1. OWNERSHIP
+   "The Software" means everything in this repository: source code, database
+   schemas and migrations, AI prompts and agent logic, user interface designs,
+   images and generated artwork, documentation, tests and all related
+   materials. "The Owner" means Mohammed Jamaal Rushdi. The Software is the
+   exclusive property of the Owner. No licence or right of any kind, express or
+   implied, by estoppel or otherwise, is granted except as stated in section 2.
+
+2. THE ONLY PERMISSIONS GRANTED
+   a) Viewing. You may read the Software in this repository to evaluate the
+      Owner's skills and experience. GitHub's Terms of Service also allow you
+      to view and fork public repositories inside GitHub's own platform; that
+      permission is limited to the operation of GitHub and gives you no right
+      to use the Software.
+   b) Private evaluation. You may run one unmodified copy on your own computer,
+      with no real customer data, for the sole purpose of evaluating the
+      Owner's work, for a reasonable time, and without making it reachable by
+      anyone else. This permission is personal, non-transferable, revocable by
+      the Owner at any time, and ends automatically if you breach this licence.
+
+3. WHAT YOU MAY NOT DO WITHOUT THE OWNER'S PRIOR WRITTEN PERMISSION
+   a) Use the Software, or any part of it, for any commercial purpose or in any
+      business, whether directly or indirectly, paid or free.
+   b) Run, deploy or host it for any purpose other than section 2(b),
+      including in production, for customers, clients or employers, or as a
+      hosted, "software as a service" or managed service of any kind.
+   c) Copy, modify, adapt, translate, merge, publish, distribute, sublicense,
+      sell, rent, lease or otherwise make the Software, or any part of it,
+      available to anyone else.
+   d) Create derivative works, or incorporate any part of the Software
+      (including its architecture, prompts, database design or user interface
+      designs) into another product, service or repository.
+   e) Use the Software or its contents to build, train, fine-tune or evaluate
+      machine-learning models or datasets, or to build a competing product.
+   f) Remove or alter any copyright, licence or attribution notice.
+
+4. RIGHTS RESERVED
+   All copyright, patent, trade secret, trademark and other intellectual
+   property rights in the Software, and the exclusive right to commercialise it,
+   are reserved by the Owner. Nothing in this licence grants any licence under
+   any patent or patent application of the Owner. The name "CaliChat" and any
+   associated logos are not licensed for any use.
+
+5. THIRD-PARTY SERVICES AND MATERIALS
+   The Software connects to third-party services (for example Google Gemini,
+   Meta WhatsApp Cloud API and Twilio) and may refer to third-party fonts and
+   tools. Those belong to their respective owners and are governed by their own
+   terms. This licence does not change them, and using them is your own
+   responsibility.
+
+6. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS
+   FOR A PARTICULAR PURPOSE, SECURITY AND NON-INFRINGEMENT.
+
+7. LIMITATION OF LIABILITY
+   TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE OWNER SHALL NOT BE LIABLE FOR ANY
+   CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM OR IN CONNECTION WITH THE
+   SOFTWARE OR ITS USE.
+
+8. TERMINATION AND REMEDIES
+   Any use outside section 2 is unauthorised. The Owner may enforce these terms
+   and seek any remedy available under the law, including injunctive relief.
+   Permissions under this licence end automatically upon any breach.
+
+9. PERMISSION REQUESTS
+   To ask for permission to use the Software, including any commercial use,
+   contact the Owner through his GitHub profile: https://github.com/mojamaal

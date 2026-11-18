@@ -1,0 +1,96 @@
+/* Playground: a faithful WhatsApp chat window. Scoped to .pgwrap so nothing else in the dashboard changes. */
+.pgwrap{display:grid;grid-template-columns:minmax(320px,430px) minmax(260px,1fr);gap:32px;align-items:start}
+@media(max-width:900px){.pgwrap{grid-template-columns:1fr}}
+.pgside .pg-tries{display:flex;flex-direction:column;gap:8px}
+.pg-try{text-align:left;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:9px 12px;cursor:pointer;font-size:13.5px}
+.pg-try:hover{border-color:#00a884;background:#f1fbf7}
+
+.wa{--wa-green:#008069;--wa-out:#d9fdd3;--wa-in:#fff;--wa-bg:#efeae2;--wa-ink:#111b21;--wa-sub:#667781;--wa-blue:#53bdeb;--wa-link:#027eb5;
+  width:100%;height:min(calc(100vh - 128px),800px);min-height:520px;display:flex;flex-direction:column;border-radius:28px;overflow:hidden;background:var(--wa-bg);color:var(--wa-ink);
+  box-shadow:0 24px 60px rgba(20,20,60,.28),0 0 0 9px #15152b;position:sticky;top:100px;margin-top:9px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Sinhala","Noto Sans Tamil",Nirmala UI,sans-serif}
+@media(max-width:900px){.wa{position:relative;top:0;height:min(76vh,720px)}}
+@media(max-width:560px){.wa{border-radius:18px;box-shadow:0 8px 30px rgba(20,20,60,.25)}}
+
+/* header */
+.wa-h{display:flex;align-items:center;gap:10px;padding:9px 10px 9px 8px;background:var(--wa-green);color:#fff;flex:none;position:relative;z-index:3}
+.wa-back{display:grid;place-items:center;width:26px;opacity:.95}
+.wa-av{width:40px;height:40px;border-radius:50%;background:#d9fdd3;color:var(--wa-green);display:grid;place-items:center;font-weight:700;font-size:18px;overflow:hidden;flex:none}
+.wa-av img{width:100%;height:100%;object-fit:cover;background:#fff}
+.wa-who{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.25}
+.wa-who b{font-size:16.5px;font-weight:600;display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wa-who small{font-size:12.5px;opacity:.85}
+.wa-ver{flex:none}
+.wa-ico{display:flex;gap:18px;align-items:center;color:#fff;background:transparent;border:0;padding:4px;opacity:.95}
+.wa-dots{cursor:pointer;border-radius:50%}
+.wa-dots:hover{background:rgba(255,255,255,.14)}
+.wa-menuwrap{position:relative}
+.wa-menu{position:absolute;right:0;top:36px;background:#fff;border-radius:8px;box-shadow:0 4px 18px rgba(11,20,26,.25);min-width:200px;padding:6px 0;z-index:5}
+.wa-menu button{display:block;width:100%;text-align:left;border:0;background:transparent;padding:11px 18px;font-size:14.5px;color:var(--wa-ink);cursor:pointer}
+.wa-menu button:hover{background:#f5f6f6}
+
+/* chat area: WhatsApp doodle wallpaper */
+.wa-chat{flex:1;overflow-y:auto;padding:12px 9% 8px 6%;display:flex;flex-direction:column;gap:2px;background-color:var(--wa-bg);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g fill='none' stroke='%23b9b2a4' stroke-opacity='.35' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'><path d='M14 22h22a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4h-9l-6 5v-5h-7a4 4 0 0 1-4-4V26a4 4 0 0 1 4-4z'/><path d='M82 18l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z'/><circle cx='28' cy='88' r='8'/><path d='M24 88h8M28 84v8'/><path d='M80 82c0-4 6-4 6 0 0-4 6-4 6 0 0 5-6 9-6 9s-6-4-6-9z'/><path d='M100 52l6 6-6 6-6-6z'/><path d='M52 60q4-6 8 0t8 0'/></g></svg>");
+  scroll-behavior:smooth}
+.wa-chat::-webkit-scrollbar{width:6px}.wa-chat::-webkit-scrollbar-thumb{background:rgba(11,20,26,.2);border-radius:3px}
+.wa-date{align-self:center;background:#fff;color:#54656f;font-size:12px;padding:5px 12px;border-radius:8px;box-shadow:0 1px .5px rgba(11,20,26,.13);margin:6px 0 8px;text-transform:uppercase;letter-spacing:.02em}
+.wa-note{align-self:center;max-width:92%;background:#ffeecd;color:#54656f;font-size:12.5px;line-height:17px;text-align:center;padding:6px 10px;border-radius:8px;box-shadow:0 1px .5px rgba(11,20,26,.13);margin:2px 0 8px}
+.wa-sys{align-self:center;max-width:92%;background:#fff;color:#54656f;font-size:12.5px;line-height:17px;text-align:center;padding:5px 11px;border-radius:8px;box-shadow:0 1px .5px rgba(11,20,26,.13);margin:6px 0}
+.wa-sys.err{background:#fde8e8;color:#9b1c1c}
+
+/* bubbles: the person testing is the customer, so their messages are green on the right */
+.wa-b{position:relative;max-width:82%;padding:6px 8px 7px 9px;border-radius:8px;box-shadow:0 1px .5px rgba(11,20,26,.13);font-size:14.2px;line-height:19px;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;margin-top:2px}
+.wa-b.me{align-self:flex-end;background:var(--wa-out)}
+.wa-b.them{align-self:flex-start;background:var(--wa-in)}
+.wa-b.first{margin-top:8px}
+.wa-b.me.first{border-top-right-radius:0}.wa-b.them.first{border-top-left-radius:0}
+.wa-b.me.first::after{content:"";position:absolute;top:0;right:-8px;width:8px;height:13px;background:var(--wa-out);clip-path:polygon(0 0,100% 0,0 100%)}
+.wa-b.them.first::after{content:"";position:absolute;top:0;left:-8px;width:8px;height:13px;background:var(--wa-in);clip-path:polygon(0 0,100% 0,100% 100%)}
+.wa-b b,.wa-b strong{font-weight:700}
+.wa-b a{color:var(--wa-link);text-decoration:none;word-break:break-all}.wa-b a:hover{text-decoration:underline}
+.wa-b code{font-family:ui-monospace,Consolas,monospace;font-size:13px}
+.wa-m{float:right;margin:7px 0 -4px 14px;font-size:11px;line-height:11px;color:var(--wa-sub);display:inline-flex;align-items:center;gap:3px;user-select:none}
+.wa-m svg{width:16px;height:11px}
+.wa-m .tk{color:#8696a0}.wa-m .tk.read{color:var(--wa-blue)}
+.wa-tools{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 0;white-space:normal}
+.wa-tool{font-size:10.5px;line-height:14px;color:#54656f;background:#f0f2f5;border-radius:99px;padding:1px 8px}
+.wa-tool.bad{background:#fde8e8;color:#9b1c1c}
+
+/* typing indicator */
+.wa-b.typing{padding:11px 14px}
+.wa-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#8696a0;margin-right:3px;animation:wadot 1.2s infinite ease-in-out}
+.wa-dot:nth-child(2){animation-delay:.18s}.wa-dot:nth-child(3){animation-delay:.36s;margin-right:0}
+@keyframes wadot{0%,60%,100%{transform:translateY(0);opacity:.45}30%{transform:translateY(-4px);opacity:1}}
+
+/* interactive reply buttons, drawn like WhatsApp's */
+.wa-btns{align-self:flex-start;width:min(82%,330px);display:flex;flex-direction:column;gap:3px;margin-top:3px}
+.wa-btn{background:#fff;border:0;border-radius:8px;box-shadow:0 1px .5px rgba(11,20,26,.13);color:var(--wa-link);font-weight:600;font-size:14.2px;padding:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px}
+.wa-btn:hover:not(:disabled){background:#f5f6f6}
+.wa-btn:disabled{opacity:.55;cursor:default}
+.wa-btn svg{width:16px;height:16px}
+
+/* cards the AI sends (product card, catalogue): same data as the dashboard chat cards, drawn as WhatsApp business cards */
+.wa .richmsg{align-self:flex-start;width:min(82%,330px);margin-top:8px;gap:3px}
+.wa .rc{border:0;border-radius:8px;box-shadow:0 1px .5px rgba(11,20,26,.13);background:#fff;color:var(--wa-ink);transition:none}
+.wa .rc:hover{transform:none;box-shadow:0 1px .5px rgba(11,20,26,.13)}
+.wa .rc-h{background:#fff;color:var(--wa-ink);border-bottom:1px solid #e9edef;padding:8px 10px}
+.wa .rc-brand small{color:var(--wa-sub);opacity:1}
+.wa .rc-logo{background:#f0f2f5}
+.wa .rc-i{aspect-ratio:1/1}
+.wa .rc-b{padding:8px 10px 9px}
+.wa .rc-a{margin:0;border:0;border-top:1px solid #e9edef;border-radius:0;color:var(--wa-link);background:#fff;padding:11px;font-weight:600}
+.wa .rc:hover .rc-a{background:#f5f6f6;color:var(--wa-link)}
+.wa .richmsg .meta{display:none}
+
+/* composer */
+.wa-bar{display:flex;align-items:flex-end;gap:8px;padding:7px 8px 9px;background:#f0f2f5;flex:none}
+.wa-field{flex:1;display:flex;align-items:center;gap:8px;background:#fff;border-radius:24px;padding:0 14px 0 12px;min-height:44px}
+.wa-field input{flex:1;border:0;outline:0;background:transparent;font-size:15.5px;padding:11px 0;color:var(--wa-ink);min-width:0;box-shadow:none}
+.wa-field input::placeholder{color:#667781}
+.wa-emoji,.wa-clip{color:#54656f;display:grid;place-items:center;flex:none}
+.wa-clip{transform:rotate(-45deg)}
+.wa-send{width:44px;height:44px;border-radius:50%;border:0;background:#00a884;color:#fff;display:grid;place-items:center;cursor:pointer;flex:none;box-shadow:0 1px 2px rgba(11,20,26,.25)}
+.wa-send:hover{background:#019b7a}
+.wa-send .i-send{display:none}
+.wa-bar.has-text .i-mic{display:none}.wa-bar.has-text .i-send{display:grid}
+.wa-send svg{display:block}
